@@ -216,3 +216,9 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - V2 startup now initializes the PA8 backlight GPIO after the board GPIO layer and initializes the ST7565 display after EEPROM settings have been loaded, before the welcome UI is rendered.
 - V2 startup explicitly avoids calling the DP32 battery ADC routines and avoids the existing low-battery shutdown logic until a PY32 ADC implementation is ready. Battery indication is therefore not functional yet on V2.
 - CI coverage was expanded to compile the shared EEPROM driver against the new V2 I²C transport. The remaining major blockers are V2 ADC/battery sampling, full EEPROM validation on hardware, and radio/display integration testing.
+
+
+## Final application PTT/battery call-site sweep (2026-10-24)
+
+- Replaced the remaining event-loop PTT reads in `app/app.c` with the target-specific PTT abstraction, so V2 uses PA3 throughout debounce/transmit state handling rather than falling through to GPIOC.
+- Guarded the remaining periodic battery ADC reads and reduced-service ADC check from the V2 path. Until the PY32 ADC is ported, the V2 app does not call the V1 DP32 battery sampling routine from its main loop.
