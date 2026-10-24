@@ -70,6 +70,7 @@ jobs:
           arm-none-eabi-gcc $COMMON_FLAGS -c audio.c -o /tmp/audio_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/st7565.c -o /tmp/st7565_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/backlight.c -o /tmp/backlight_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c driver/i2c.c -o /tmp/i2c_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
