@@ -331,20 +331,25 @@ endif
 #VERSION_STRING := 230930b
 
 
-ASFLAGS = -c -mcpu=cortex-m0
+ifeq ($(TARGET_UVK5_V2),1)
+    CPU_FLAGS = -mcpu=cortex-m0plus -mthumb
+else
+    CPU_FLAGS = -mcpu=cortex-m0 -mthumb
+endif
+ASFLAGS = -c $(CPU_FLAGS)
 ifeq ($(ENABLE_OVERLAY),1)
 	ASFLAGS += -DENABLE_OVERLAY
 endif
 
 ifeq ($(ENABLE_CLANG),0)
-	CFLAGS += -Os -Wall -Wno-error -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c2x -MMD -w
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c11 -MMD
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c99 -MMD
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu99 -MMD
-	#CFLAGS += -Os -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu11 -MMD
+	CFLAGS += -Os -Wall -Wno-error $(CPU_FLAGS) -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c2x -MMD -w
+	#CFLAGS += -Os -Wall -Werror $(CPU_FLAGS) -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c11 -MMD
+	#CFLAGS += -Os -Wall -Werror $(CPU_FLAGS) -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c99 -MMD
+	#CFLAGS += -Os -Wall -Werror $(CPU_FLAGS) -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu99 -MMD
+	#CFLAGS += -Os -Wall -Werror $(CPU_FLAGS) -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=gnu11 -MMD
 else
 	# Oz needed to make it fit on flash
-	CFLAGS += -Oz -Wall -Werror -mcpu=cortex-m0 -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c2x -MMD
+	CFLAGS += -Oz -Wall -Werror $(CPU_FLAGS) -fno-builtin -fshort-enums -fno-delete-null-pointer-checks -std=c2x -MMD
 endif
 
 ifeq ($(ENABLE_LTO),1)
