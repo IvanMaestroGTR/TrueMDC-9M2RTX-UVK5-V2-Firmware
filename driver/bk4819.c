@@ -20,8 +20,10 @@
 #include "string.h"
 #include "settings.h"
 #include "../audio.h"
+#if !defined(TARGET_UVK5_V2)
 #include "../bsp/dp32g030/gpio.h"
 #include "../bsp/dp32g030/portcon.h"
+#endif
 #include "bk4819.h"
 #ifdef TARGET_UVK5_V2
 #include "bk4819_v2_adapter.h"
