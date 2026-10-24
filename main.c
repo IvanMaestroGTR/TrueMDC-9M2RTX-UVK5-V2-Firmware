@@ -14,12 +14,19 @@
  *     limitations under the License.
  */
 
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
 #include "driver/gpio.h"
+#else
+#include "driver/board_v2.h"
+#include "driver/gpio_v2.h"
+#endif
 #include "app/si.h"
 
 #include "driver/i2c.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/system.h"
+#endif
 #include "frequencies.h"
 #include "misc.h"
 #include "app/doppler.h"
@@ -50,7 +57,9 @@
 
 #endif
 
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/rtc.h"
+#endif
 
 #ifdef ENABLE_TIMER
 #include "bsp/dp32g030/uart.h"
@@ -69,8 +78,10 @@
 #include "version.h"
 #include "app/app.h"
 #include "app/dtmf.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
 #include "bsp/dp32g030/syscon.h"
+#endif
 #include "driver/backlight.h"
 #include "driver/bk4819.h"
 #include "driver/gpio.h"
@@ -106,6 +117,7 @@ void _putchar(__attribute__((unused)) char c) {
 void Main(void) {
     //BOOT_Mode_t  BootMode;
 
+#ifndef TARGET_UVK5_V2
     // Enable clock gating of blocks we need
     SYSCON_DEV_CLK_GATE = 0
                           | SYSCON_DEV_CLK_GATE_GPIOA_BITS_ENABLE
@@ -123,10 +135,15 @@ void Main(void) {
         | (1 << 22)
 #endif
             ;
+#endif
 
     SYSTICK_Init();
 
+#ifdef TARGET_UVK5_V2
+    BOARD_V2_GPIO_Init();
+#else
     BOARD_Init();
+#endif
 
 
 
