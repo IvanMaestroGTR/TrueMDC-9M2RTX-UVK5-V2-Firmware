@@ -12,6 +12,13 @@
  * are vendored under bsp/py32f030/ for the isolated V2 runtime.
  */
 #include "../bsp/py32f030/device.h"
+#include "systick.h"
+
+void SYSTEM_DelayMs(uint32_t Delay)
+{
+    SYSTICK_DelayUs(Delay * 1000U);
+}
+
 
 #ifndef HSE_VALUE
 #define HSE_VALUE 24000000U
