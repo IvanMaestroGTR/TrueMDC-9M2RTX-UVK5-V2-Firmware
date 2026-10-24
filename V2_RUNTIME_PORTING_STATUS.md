@@ -194,3 +194,11 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Ported `audio.c` voice-chip strobe/data control to the verified V2 pins: voice strobe PA7 and data PB0. V1 GPIO macros remain unchanged under the non-V2 branch.
 - Corrected the V2 application startup's voice-pin idle reset to PA7 low / PB0 high, matching the V2 reference driver's voice pin definitions.
 - Extended the app compile smoke step to include `main.c`, `app/app.c`, `driver/keyboard.c`, and `audio.c` with `TARGET_UVK5_V2`. The job is not being treated as a blocker for continuing source port work.
+
+
+## Display and backlight application ports (2026-10-24)
+
+- Added a target-specific ST7565 transport in `driver/st7565.c`. V2 uses the reference LCD GPIO interface (CS PA9, A0 PA11, SCK PA10, SDA PA12) and bit-banged serial writes; V1 retains its existing SPI0 implementation.
+- Ported basic V2 backlight on/off behavior in `driver/backlight.c` to PA8. The original DP32 PWM path remains untouched for V1. V2 brightness currently behaves as on/off only; proper PWM dimming is still pending.
+- CI now attempts to compile the V2 display and backlight translation units as well as the previously adapted application, keypad, and voice files.
+- EEPROM/I²C and ADC/battery hardware access still require dedicated V2 implementations. The current V2 board reference does not justify reusing the DP32 peripheral register code.
