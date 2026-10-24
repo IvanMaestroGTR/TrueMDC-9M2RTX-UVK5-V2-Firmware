@@ -9,5 +9,7 @@
 #include <stdint.h>
 
 void BOARD_V2_GPIO_Init(void);
+void BOARD_V2_ADC_Init(void);
+void BOARD_V2_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent);
 
 #endif
