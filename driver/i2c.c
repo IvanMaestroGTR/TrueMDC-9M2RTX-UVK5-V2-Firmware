@@ -67,9 +67,7 @@ void I2C_Stop(void) {
 uint8_t I2C_Read(bool bFinal) {
     uint8_t i, Data;
 
-    PORTCON_PORTA_IE |= PORTCON_PORTA_IE_A11_BITS_ENABLE;
-    PORTCON_PORTA_OD &= ~PORTCON_PORTA_OD_A11_MASK;
-    GPIOA->DIR &= ~GPIO_DIR_11_MASK;
+    I2C_SDA_INPUT();
 
     Data = 0;
     for (i = 0; i < 8; i++) {
@@ -86,9 +84,7 @@ uint8_t I2C_Read(bool bFinal) {
         SYSTICK_DelayUs(1);
     }
 
-    PORTCON_PORTA_IE &= ~PORTCON_PORTA_IE_A11_MASK;
-    PORTCON_PORTA_OD |= PORTCON_PORTA_OD_A11_BITS_ENABLE;
-    GPIOA->DIR |= GPIO_DIR_11_BITS_OUTPUT;
+    I2C_SDA_OUTPUT();
     I2C_SCL_CLEAR();
     SYSTICK_DelayUs(1);
     if (bFinal) {
@@ -125,9 +121,7 @@ int I2C_Write(uint8_t Data) {
         SYSTICK_DelayUs(1);
     }
 
-    PORTCON_PORTA_IE |= PORTCON_PORTA_IE_A11_BITS_ENABLE;
-    PORTCON_PORTA_OD &= ~PORTCON_PORTA_OD_A11_MASK;
-    GPIOA->DIR &= ~GPIO_DIR_11_MASK;
+    I2C_SDA_INPUT();
     I2C_SDA_SET();
     SYSTICK_DelayUs(1);
     I2C_SCL_SET();
@@ -142,9 +136,7 @@ int I2C_Write(uint8_t Data) {
 
     I2C_SCL_CLEAR();
     SYSTICK_DelayUs(1);
-    PORTCON_PORTA_IE &= ~PORTCON_PORTA_IE_A11_MASK;
-    PORTCON_PORTA_OD |= PORTCON_PORTA_OD_A11_BITS_ENABLE;
-    GPIOA->DIR |= GPIO_DIR_11_BITS_OUTPUT;
+    I2C_SDA_OUTPUT();
     I2C_SDA_SET();
 
     return ret;
