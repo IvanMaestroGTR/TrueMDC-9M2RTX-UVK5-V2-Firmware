@@ -66,7 +66,7 @@ g_pfnVectors:
     .word 0
     .word 0
     .word PendSV_Handler
-    .word SysTick_Handler
+    .word SystickHandler
     .word WWDG_IRQHandler
     .word PVD_IRQHandler
     .word RTC_IRQHandler
@@ -101,6 +101,12 @@ g_pfnVectors:
     .word 0
 .size g_pfnVectors, .-g_pfnVectors
 
+.weak SystickHandler
+.type SystickHandler, %function
+SystickHandler:
+    bx    lr
+.size SystickHandler, .-SystickHandler
+
 .macro weak_default name
     .weak \name
     .thumb_set \name, Default_Handler
@@ -110,7 +116,6 @@ weak_default NMI_Handler
 weak_default HardFault_Handler
 weak_default SVC_Handler
 weak_default PendSV_Handler
-weak_default SysTick_Handler
 weak_default WWDG_IRQHandler
 weak_default PVD_IRQHandler
 weak_default RTC_IRQHandler
