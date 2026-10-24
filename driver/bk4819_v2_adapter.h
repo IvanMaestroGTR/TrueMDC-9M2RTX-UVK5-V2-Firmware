@@ -12,6 +12,11 @@
 #ifdef TARGET_UVK5_V2
 #include <stdint.h>
 #include "bk4819_bus_v2.h"
+#include "gpio_v2.h"
+
+#define BK4819_TARGET_AUDIO_PATH_PIN ((uint16_t)(1U << 7))
+#define BK4819_TARGET_AudioPathEnable() GPIO_V2_Set(GPIOB, BK4819_TARGET_AUDIO_PATH_PIN)
+#define BK4819_TARGET_AudioPathDisable() GPIO_V2_Clear(GPIOB, BK4819_TARGET_AUDIO_PATH_PIN)
 
 static inline void BK4819_TARGET_BusInit(void)
 {
