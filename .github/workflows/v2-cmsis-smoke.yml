@@ -3,9 +3,11 @@ name: V2 PY32 runtime smoke test
 on:
   push:
     branches:
+      - main
       - v2-k5-port
   pull_request:
     branches:
+      - main
       - v2-k5-port
   workflow_dispatch:
 
