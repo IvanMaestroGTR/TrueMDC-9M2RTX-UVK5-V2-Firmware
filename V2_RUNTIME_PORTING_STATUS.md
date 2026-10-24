@@ -231,3 +231,6 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 
 - The first application-layer CI attempt exposed the missing CMSIS ARMCM0 include path and an unguarded DP32 GPIO include in the shared `audio.h`. Both have been corrected: the workflow now includes the CMSIS device header directory and V2 no longer imports DP32 GPIO definitions through `audio.h`.
 - The independent V1 build passed on commit `dc8ac86167289d7ce9fc51f5d84730212a62726c`. The V2 application compile is being iterated separately; no complete V2 image is claimed yet.
+
+
+- The next CI failure traced to the DP32 `ARMCM0.h` core header being pulled into the PY32 translation unit. Guarded it out of `app/app.c` and `driver/eeprom.c` for V2 so the PY32 CMSIS core definitions remain authoritative.
