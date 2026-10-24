@@ -241,3 +241,9 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - CI passed on commit `5be4e0e218b3163712a8a397cdb67ef84a9d9439`: V2 system/SysTick/GPIO/board/BK4819 bus compile, BK4819 driver compile with V2 bus selected, shared application entry/event loop/keypad/voice/display/backlight/I²C/EEPROM translation-unit compile, V2 startup assembly, and isolated startup/linker smoke ELF link.
 - The separate normal V1 build also passed on that commit.
 - This remains an isolated V2 smoke image, not a complete TrueMDC application firmware: the full application source graph is not yet linked for V2, and V2 ADC/battery, optional peripherals, and hardware validation remain open.
+
+
+## Broader shared-application compile coverage (2026-10-24)
+
+- Expanded the V2 CI compile sweep to include `radio.c`, `functions.c`, `settings.c`, `helper/battery.c`, `app/mdc1200.c`, and `app/fleetsync.c` in addition to the display, keypad, I²C, EEPROM, voice, and BK4819 files.
+- Guarded the remaining direct DP32 GPIO header includes in the shared radio/functions modules. The purpose of this sweep is to surface remaining cross-target assumptions without waiting for a full link.
