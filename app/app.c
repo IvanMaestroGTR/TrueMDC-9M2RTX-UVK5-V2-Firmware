@@ -66,10 +66,11 @@
 #include "driver/keyboard.h"
 #include "driver/st7565.h"
 #ifndef TARGET_UVK5_V2
-#include "driver/system.h"
+#include "driver/gpio.h"
 #else
 #include "driver/gpio_v2.h"
 #endif
+#include "driver/system.h"
 #include "am_fix.h"
 #include "dtmf.h"
 //#include "external/printf/printf.h"
