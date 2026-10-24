@@ -20,10 +20,14 @@
 #include "app/aircopy.h"
 #endif
 
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "driver/bk4819.h"
 #include "driver/keyboard.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
+#endif
 #include "driver/system.h"
 #include "helper/boot.h"
 #include "misc.h"
