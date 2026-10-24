@@ -111,3 +111,22 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - The V2 smoke workflow was expanded to compile and link the GPIO object.
   The result for the expanded workflow is pending; this does not yet validate
   the full app, RF signalling, display, keyboard, or EEPROM path.
+
+
+## Board GPIO initialization and CI follow-up (2026-10-24)
+
+- The first workflow that included `gpio_v2.c` failed before compilation because
+  YAML shell continuation characters in the new step were accidentally doubled.
+  The compiler log confirmed this was a workflow command-format issue, not a C
+  diagnostic. The continuation characters were corrected in a follow-up commit.
+- Added `driver/board_v2.c` and `driver/board_v2.h`. The initial board setup
+  is based on the V2 reference `App/board.c`: output groups on GPIOA/GPIOB,
+  input rows on GPIOA/GPIOF, PTT input with pull-up, PA9/PA10 held high, and
+  PA4/PB1 placed in analog mode for battery ADC channels.
+- This is only the GPIO stage of board initialization. It does not yet initialize
+  ADC calibration/conversion, LCD, keyboard scanning, BK4819 signalling pins,
+  EEPROM/flash access, or the radio's timing-sensitive bit-bang paths.
+- The latest workflow now compiles and links both the GPIO primitives and the
+  board GPIO setup. Its result is pending; do not treat the V2 firmware as
+  boot-tested or flashable until that CI passes and the remaining peripherals
+  and application dependencies are ported.
