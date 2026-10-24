@@ -63,7 +63,7 @@ jobs:
             -c driver/bk4819.c -o /tmp/bk4819_v2.o
       - name: Compile shared application entry, event loop, and V2 keypad
         run: |
-          COMMON_FLAGS="-mcpu=cortex-m0plus -mthumb -std=gnu2x -Os -fno-builtin -fshort-enums -DTARGET_UVK5_V2 -DENABLE_MDC1200 -DENABLE_FLEETSYNC -I. -Iapp -Idriver -Iui -Ihelper -Ibsp/py32f030 -Ibsp/dp32g030 -Iexternal/CMSIS_5/CMSIS/Core/Include"
+          COMMON_FLAGS="-mcpu=cortex-m0plus -mthumb -std=gnu2x -Os -fno-builtin -fshort-enums -DTARGET_UVK5_V2 -DENABLE_MDC1200 -DENABLE_FLEETSYNC -I. -Iapp -Idriver -Iui -Ihelper -Ibsp/py32f030 -Ibsp/dp32g030 -Iexternal/CMSIS_5/CMSIS/Core/Include -Iexternal/CMSIS_5/Device/ARM/ARMCM0/Include"
           arm-none-eabi-gcc $COMMON_FLAGS -c main.c -o /tmp/main_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c app/app.c -o /tmp/app_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/keyboard.c -o /tmp/keyboard_v2.o
