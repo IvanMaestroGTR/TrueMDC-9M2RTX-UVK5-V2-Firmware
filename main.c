@@ -24,9 +24,7 @@
 #include "app/si.h"
 
 #include "driver/i2c.h"
-#ifndef TARGET_UVK5_V2
 #include "driver/system.h"
-#endif
 #include "frequencies.h"
 #include "misc.h"
 #include "app/doppler.h"
