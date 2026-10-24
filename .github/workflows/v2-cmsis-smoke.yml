@@ -84,6 +84,19 @@ jobs:
           arm-none-eabi-gcc $COMMON_FLAGS -c ui/ui.c -o /tmp/ui_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c ui/main.c -o /tmp/ui_main_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c ui/welcome.c -o /tmp/welcome_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/scanner.c -o /tmp/scanner_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/chFrScanner.c -o /tmp/chfrscanner_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/generic.c -o /tmp/generic_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/common.c -o /tmp/common_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/battery.c -o /tmp/ui_battery_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/battery_check.c -o /tmp/ui_battery_check_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/status.c -o /tmp/ui_status_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/inputbox.c -o /tmp/ui_inputbox_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/helper.c -o /tmp/ui_helper_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c scheduler.c -o /tmp/scheduler_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c misc.c -o /tmp/misc_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c dcs.c -o /tmp/dcs_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c bitmaps.c -o /tmp/bitmaps_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
