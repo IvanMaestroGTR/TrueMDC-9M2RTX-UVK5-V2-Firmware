@@ -148,6 +148,7 @@ void Main(void) {
 #ifdef TARGET_UVK5_V2
     BOARD_V2_GPIO_Init();
     BACKLIGHT_InitHardware();
+    BOARD_V2_ADC_Init();
 #else
     BOARD_Init();
 #endif
@@ -168,9 +169,7 @@ void Main(void) {
 #ifndef TARGET_UVK5_V2
     BOARD_ADC_GetBatteryInfo(&gBatteryCurrentVoltage, &gBatteryCurrent);
 #else
-    /* ADC/battery conversion is not yet ported; do not touch DP32 registers. */
-    gBatteryCurrentVoltage = 0U;
-    gBatteryCurrent = 0U;
+    BOARD_V2_ADC_GetBatteryInfo(&gBatteryCurrentVoltage, &gBatteryCurrent);
 #endif
 
 
@@ -207,9 +206,10 @@ void Main(void) {
     }
     BATTERY_GetReadings(false);
 #else
-    /* Avoid the V1 ADC path and low-battery shutdown until V2 ADC is ported. */
-    gBatteryDisplayLevel = 0U;
-    gLowBattery = false;
+    for (uint32_t i = 0; i < ARRAY_SIZE(gBatteryVoltages); i++) {
+        BOARD_V2_ADC_GetBatteryInfo(&gBatteryVoltages[i], &gBatteryCurrent);
+    }
+    BATTERY_GetReadings(false);
 #endif
 
 #ifdef ENABLE_AM_FIX
