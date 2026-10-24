@@ -61,7 +61,7 @@
 #include "bsp/dp32g030/rtc.h"
 #endif
 
-#ifdef ENABLE_TIMER
+#if defined(ENABLE_TIMER) && !defined(TARGET_UVK5_V2)
 #include "bsp/dp32g030/uart.h"
 #include "bsp/dp32g030/timer.h"
 #endif
@@ -231,7 +231,7 @@ void Main(void) {
 //    ST7565_BlitFullScreen();
 //SI4732_Main();
 //#endif
-#ifdef ENABLE_TIMER
+#if defined(ENABLE_TIMER) && !defined(TARGET_UVK5_V2)
 
 
     BOARD_PORTCON_Init();
