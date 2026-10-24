@@ -34,7 +34,7 @@ jobs:
             -c driver/systick_v2.c -o /tmp/systick_v2.o
       - name: Compile PY32F030 GPIO primitives
         run: |
-          arm-none-eabi-gcc \\
+          arm-none-eabi-gcc \
             -mcpu=cortex-m0plus -mthumb \\
             -std=c11 -Wall -Wextra -Werror -ffreestanding \\
             -Ibsp/py32f030 -Idriver \\
