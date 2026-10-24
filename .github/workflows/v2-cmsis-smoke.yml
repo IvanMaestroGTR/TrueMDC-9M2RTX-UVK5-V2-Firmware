@@ -1,0 +1,28 @@
+name: V2 PY32 CMSIS smoke test
+
+on:
+  push:
+    branches:
+      - v2-k5-port
+  pull_request:
+    branches:
+      - v2-k5-port
+  workflow_dispatch:
+
+jobs:
+  compile-system-init:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install ARM embedded compiler
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi
+      - name: Compile isolated PY32F030 system initialization
+        run: |
+          arm-none-eabi-gcc \
+            -mcpu=cortex-m0plus -mthumb \
+            -std=c11 -Wall -Wextra -Werror -ffreestanding \
+            -Ibsp/py32f030 \
+            -c driver/system_v2.c -o /tmp/system_v2.o
+          arm-none-eabi-size /tmp/system_v2.o
