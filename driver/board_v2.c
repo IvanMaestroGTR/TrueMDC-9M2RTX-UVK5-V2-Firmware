@@ -22,7 +22,7 @@ void BOARD_V2_GPIO_Init(void)
         GPIO_V2_MODE_INPUT, GPIO_V2_PULL_UP, 0U, 0U);
 
     /* Hold the two board control lines high as the reference does. */
-    GPIO_V2_Set(GPIOA, PIN(9) | PIN(10));
+    GPIO_V2_Set(GPIOA, PIN(9) | PIN(10) | PIN(13));
 
     /* ADC inputs: battery voltage/current channels on PA4 and PB1. */
     (void)GPIO_V2_Configure(GPIOA, PIN(4),
