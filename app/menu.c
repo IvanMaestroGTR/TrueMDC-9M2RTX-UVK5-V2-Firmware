@@ -42,7 +42,9 @@
 #include "driver/backlight.h"
 #include "driver/bk4819.h"
 #include "driver/eeprom.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
+#endif
 #include "driver/keyboard.h"
 #include "frequencies.h"
 #include "helper/battery.h"
