@@ -155,3 +155,10 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Compared the BK4819 bus routines against the V2 reference implementation in `muzkr/uv-k5-firmware-custom` branch `v2`. The reference uses 1 microsecond edge delays; the initial isolated bus used 250 ns delays inherited from V1 assumptions.
 - Updated `driver/bk4819_bus_v2.c` to use `SYSTICK_DelayUs(1)` for bus edge timing, matching the reference timing scale. This change is awaiting a new CI run.
 - The bus remains an isolated module. It has not yet replaced the DP32-specific transaction code in `driver/bk4819.c`; the full app, readback on hardware, MDC1200/FleetSync operation, display, keyboard, ADC and persistent settings are still unported/unverified. No flashable V2 firmware is claimed.
+
+
+## Bus API link smoke test (2026-10-24)
+
+- Expanded `.github/workflows/v2-cmsis-smoke.yml` so the minimal V2 entry point references `SYSTICK_Init`, `BOARD_V2_GPIO_Init`, and every public BK4819 V2 bus operation. This prevents linker garbage collection from silently excluding the bus object and gives a stronger API-level compile/link check.
+- CI passed on commit `b2f9364b7ba89ddcdd34c48e0097e87580e46130`: both `compile-v2-runtime` and the independent V1 `build` job succeeded. The 1 us bus timing change and all isolated V2 support objects compile and link together.
+- This is still a link smoke test, not execution on a radio. The stub entry point is never run on target; the bus is not yet wired into `driver/bk4819.c`, and the application is not a complete V2 image.
