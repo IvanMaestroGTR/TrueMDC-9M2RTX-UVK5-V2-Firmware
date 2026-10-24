@@ -20,8 +20,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef TARGET_UVK5_V2
+#include "driver/gpio_v2.h"
+#else
 #include "bsp/dp32g030/gpio.h"
 #include "driver/gpio.h"
+#endif
 
 enum BEEP_Type_t
 {
@@ -136,11 +140,19 @@ enum VOICE_ID_t
 typedef enum VOICE_ID_t  VOICE_ID_t;
 	
 static inline void AUDIO_AudioPathOn(void) {
-	GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_AUDIO_PATH);
+#ifdef TARGET_UVK5_V2
+    GPIO_V2_Set(GPIOB, (uint16_t)(1U << 7));
+#else
+    GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_AUDIO_PATH);
+#endif
 }
 
 static inline void AUDIO_AudioPathOff(void) {
-	GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_AUDIO_PATH);
+#ifdef TARGET_UVK5_V2
+    GPIO_V2_Clear(GPIOB, (uint16_t)(1U << 7));
+#else
+    GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_AUDIO_PATH);
+#endif
 }
 
 #ifdef ENABLE_VOICE
