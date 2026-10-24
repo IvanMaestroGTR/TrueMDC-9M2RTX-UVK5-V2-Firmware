@@ -23,7 +23,9 @@
 #endif
 
 #include "audio.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "dcs.h"
 #include "driver/backlight.h"
 #ifdef ENABLE_MESSENGER
