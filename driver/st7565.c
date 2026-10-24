@@ -24,6 +24,8 @@
 #include "driver/spi.h"
 #else
 #include "driver/gpio_v2.h"
+#include "driver/systick.h"
+#define SYSTEM_DelayMs(ms) SYSTICK_DelayUs((uint32_t)(ms) * 1000U)
 #endif
 #include "driver/st7565.h"
 #ifndef TARGET_UVK5_V2
