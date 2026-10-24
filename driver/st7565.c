@@ -42,7 +42,7 @@
 #define LCD_SCK_HIGH() GPIO_V2_Set(GPIOA, (uint16_t)(1U << 10))
 #define LCD_SDA_LOW()  GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 12))
 #define LCD_SDA_HIGH() GPIO_V2_Set(GPIOA, (uint16_t)(1U << 12))
-#define LCD_TX_BYTE(value) do { uint8_t lcd_b_ = (uint8_t)(value); for (unsigned lcd_i_ = 0; lcd_i_ < 8U; ++lcd_i_) { LCD_SCK_LOW(); if ((lcd_b_ & 0x80U) != 0U) LCD_SDA_HIGH(); else LCD_SDA_LOW(); LCD_SCK_HIGH(); lcd_b_ <<= 1; } } while (0)
+#define LCD_TX_BYTE(value) do { uint8_t lcd_b_ = (uint8_t)(value); for (unsigned lcd_i_ = 0; lcd_i_ < 8U; ++lcd_i_) { LCD_SCK_LOW(); if ((lcd_b_ & 0x80U) != 0U) LCD_SDA_HIGH(); else LCD_SDA_LOW(); SYSTICK_DelayUs(1U); LCD_SCK_HIGH(); SYSTICK_DelayUs(1U); lcd_b_ <<= 1; } LCD_SCK_LOW(); } while (0)
 #define LCD_TX_WAIT() ((void)0)
 #define LCD_SPI_INIT() do { LCD_CS_HIGH(); LCD_A0_HIGH(); LCD_SCK_HIGH(); LCD_SDA_HIGH(); } while (0)
 #define LCD_SPI_BEGIN() LCD_CS_LOW()
