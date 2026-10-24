@@ -147,3 +147,11 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
   register accesses must be routed through a target-specific abstraction.
 - Latest expanded workflow is pending. A compile/link pass would establish
   only that these isolated objects build together, not that RF signalling works.
+
+
+## V2 bus timing review (2026-10-24)
+
+- The isolated runtime smoke workflow passed on commit `a113febf0ddc722eff0c15c1cb6917de84adc4f4`: both `compile-v2-runtime` and the normal V1 `build` check concluded successfully. This verifies compilation/linking of the isolated V2 support objects only.
+- Compared the BK4819 bus routines against the V2 reference implementation in `muzkr/uv-k5-firmware-custom` branch `v2`. The reference uses 1 microsecond edge delays; the initial isolated bus used 250 ns delays inherited from V1 assumptions.
+- Updated `driver/bk4819_bus_v2.c` to use `SYSTICK_DelayUs(1)` for bus edge timing, matching the reference timing scale. This change is awaiting a new CI run.
+- The bus remains an isolated module. It has not yet replaced the DP32-specific transaction code in `driver/bk4819.c`; the full app, readback on hardware, MDC1200/FleetSync operation, display, keyboard, ADC and persistent settings are still unported/unverified. No flashable V2 firmware is claimed.
