@@ -97,6 +97,61 @@ static const struct {
 };
 
 KEY_Code_t KEYBOARD_Poll(void) {
+#ifdef TARGET_UVK5_V2
+    static const KEY_Code_t keys[5][4] = {
+        {KEY_SIDE1, KEY_SIDE2, KEY_INVALID, KEY_INVALID},
+        {KEY_MENU, KEY_1, KEY_4, KEY_7},
+        {KEY_UP, KEY_2, KEY_5, KEY_8},
+        {KEY_DOWN, KEY_3, KEY_6, KEY_9},
+        {KEY_EXIT, KEY_STAR, KEY_0, KEY_F}
+    };
+    static const uint16_t colA[3] = {
+        (uint16_t)(1U << 5), (uint16_t)(1U << 6), (uint16_t)(1U << 7)
+    };
+    const uint16_t colB0 = (uint16_t)(1U << 0);
+    KEY_Code_t Key = KEY_INVALID;
+
+    for (unsigned int col = 0; col < 5; ++col) {
+        uint32_t stable = 0U;
+        unsigned int i;
+        unsigned int k;
+
+        GPIO_V2_Set(GPIOA, colA[0] | colA[1] | colA[2]);
+        GPIO_V2_Set(GPIOB, colB0);
+        if (col > 0U) {
+            if (col < 4U)
+                GPIO_V2_Clear(GPIOA, colA[col - 1U]);
+            else
+                GPIO_V2_Clear(GPIOB, colB0);
+        }
+
+        for (i = 0U, k = 0U, stable = 0U; i < 3U && k < 8U; ++i, ++k) {
+            uint32_t rows;
+            SYSTICK_DelayUs(1U);
+            rows = (uint32_t)(GPIO_V2_Read(GPIOF) & 0x0003U) |
+                   (uint32_t)((GPIO_V2_Read(GPIOA) & 0x0003U) << 2);
+            i *= (stable == rows);
+            stable = rows;
+        }
+        if (i < 3U)
+            break;
+
+        for (unsigned int row = 0U; row < 4U; ++row) {
+            if ((stable & (1U << row)) == 0U) {
+                Key = keys[col][row];
+                break;
+            }
+        }
+        if (Key != KEY_INVALID)
+            break;
+    }
+
+    /* Restore the shared voice/keypad lines to their idle states. */
+    GPIO_V2_Clear(GPIOA, colA[2]);
+    GPIO_V2_Set(GPIOB, colB0);
+    return Key;
+#else
+KEY_Code_t KEYBOARD_Poll(void) {\n
 
 #ifdef ENABLE_DOCK
     if(gSimulateKey != KEY_INVALID)
@@ -164,6 +219,8 @@ KEY_Code_t KEYBOARD_Poll(void) {
     GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_KEYBOARD_7);
 
     return Key;
+}
+#endif
 }
 
 KEY_Code_t GetKey() {
