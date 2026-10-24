@@ -34,7 +34,6 @@ docker run --rm \
             ENABLE_FMRADIO=0 \
             ENABLE_SPECTRUM=0 && \
         cp firmware.bin compiled-firmware/TrueMDC.UVK5V2.Gen${VERSION}.bin && \
-        cp firmware.bin compiled-firmware/TrueMDC.UVK5V2.Gen${VERSION}.elf.bin && \
         cp archive/TrueMDC.Gen${VERSION}.packed.bin compiled-firmware/"
 
 echo
