@@ -448,7 +448,9 @@ void MENU_AcceptSetting(void) {
         else if (gSubMenuSelection > Max) gSubMenuSelection = Max;
     }
     char a = gSubMenuSelection;//UART_Send(a,1);
+#ifdef ENABLE_UART
     UART_Send((uint8_t *) &a, 1);
+#endif
 
     switch (UI_MENU_GetCurrentMenuId()) {
         default:
