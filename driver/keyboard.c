@@ -242,5 +242,3 @@ KEY_Code_t GetKey() {
 #endif
     return btn;
 }
-    return btn;
-}
