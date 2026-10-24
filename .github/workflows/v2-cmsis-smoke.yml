@@ -25,6 +25,13 @@ jobs:
             -std=c11 -Wall -Wextra -Werror -ffreestanding \
             -Ibsp/py32f030 \
             -c driver/system_v2.c -o /tmp/system_v2.o
+      - name: Compile PY32F030 SysTick timing driver
+        run: |
+          arm-none-eabi-gcc \
+            -mcpu=cortex-m0plus -mthumb \
+            -std=c11 -Wall -Wextra -Werror -ffreestanding \
+            -Ibsp/py32f030 -Idriver \
+            -c driver/systick_v2.c -o /tmp/systick_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
