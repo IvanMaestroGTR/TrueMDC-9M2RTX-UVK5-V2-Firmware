@@ -1017,7 +1017,7 @@ static void CheckKeys(void) {
 // -------------------- PTT ------------------------
     if (gPttIsPressed) {
 
-        if (GPIO_CheckBit(&GPIOC->DATA, GPIOC_PIN_PTT) ||
+        if (APP_PTT_IS_RELEASED() ||
             SerialConfigInProgress()) {    // PTT released or serial comms config in progress
             if (++gPttDebounceCounter >= 3 || SerialConfigInProgress())        // 30ms
             {    // stop transmitting
@@ -1028,7 +1028,7 @@ static void CheckKeys(void) {
             }
         } else
             gPttDebounceCounter = 0;
-    } else if (!GPIO_CheckBit(&GPIOC->DATA, GPIOC_PIN_PTT) && !SerialConfigInProgress()) {    // PTT pressed
+    } else if (!APP_PTT_IS_RELEASED() && !SerialConfigInProgress()) {    // PTT pressed
         if (++gPttDebounceCounter >= 3)        // 30ms
         {    // start transmitting
             boot_counter_10ms = 0;
@@ -1510,6 +1510,7 @@ void APP_TimeSlice500ms(void) {
 
     }
     if (gReducedService) {
+#ifndef TARGET_UVK5_V2
         BOARD_ADC_GetBatteryInfo(&gBatteryCurrentVoltage, &gBatteryCurrent);
 
         if (gBatteryCurrent > 500 || gBatteryCalibration[3] < gBatteryCurrentVoltage) {
@@ -1519,7 +1520,7 @@ void APP_TimeSlice500ms(void) {
             NVIC_SystemReset();
 #endif
         }
-
+#endif
         return;
     }
 
@@ -1529,12 +1530,14 @@ void APP_TimeSlice500ms(void) {
 
     if (gCurrentFunction != FUNCTION_TRANSMIT) {
 
+#ifndef TARGET_UVK5_V2
         if ((gBatteryCheckCounter & 1) == 0) {
             BOARD_ADC_GetBatteryInfo(&gBatteryVoltages[gBatteryVoltageIndex++], &gBatteryCurrent);
             if (gBatteryVoltageIndex > 3)
                 gBatteryVoltageIndex = 0;
             BATTERY_GetReadings(true);
         }
+#endif
     }
 
     // regular display updates (once every 2 sec) - if need be
