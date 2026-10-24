@@ -204,6 +204,10 @@ static uint16_t BK4819_ReadU16(void) {
 }
 
 uint16_t BK4819_ReadRegister(BK4819_REGISTER_t Register) {
+#ifdef TARGET_UVK5_V2
+    return BK4819_TARGET_ReadRegister((uint8_t)Register);
+#else
+
     uint16_t Value;
 
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCN);
@@ -223,6 +227,7 @@ uint16_t BK4819_ReadRegister(BK4819_REGISTER_t Register) {
 
     return Value;
 
+#endif
 }
 
 void BK4819_WriteRegister(BK4819_REGISTER_t Register, uint16_t Data) {
