@@ -50,7 +50,9 @@
 #include "ARMCM0.h"
 #include "audio.h"
 #include "board.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "driver/backlight.h"
 
 #ifdef ENABLE_FMRADIO
@@ -58,10 +60,16 @@
 #endif
 
 #include "driver/bk4819.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
+#endif
 #include "driver/keyboard.h"
 #include "driver/st7565.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/system.h"
+#else
+#include "driver/gpio_v2.h"
+#endif
 #include "am_fix.h"
 #include "dtmf.h"
 //#include "external/printf/printf.h"
@@ -85,6 +93,12 @@
 #include "ui/menu.h"
 #include "ui/status.h"
 #include "ui/ui.h"
+
+#ifdef TARGET_UVK5_V2
+#define APP_PTT_IS_RELEASED() ((GPIO_V2_Read(GPIOA) & (1U << 3)) != 0U)
+#else
+#define APP_PTT_IS_RELEASED() APP_PTT_IS_RELEASED()
+#endif
 
 static bool gRxEndTonePending;
 // A received signal on dual watch must return to alternating VFOs before its
