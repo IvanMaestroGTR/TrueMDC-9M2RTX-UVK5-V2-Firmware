@@ -143,7 +143,7 @@ jobs:
 
       - name: Attempt full V2 application build and link
         run: |
-          make build TARGET_UVK5_V2=1 ENABLE_MDC1200=1 ENABLE_MDC1200_EDIT=1 ENABLE_MDC1200_CONTACT=1
+          make build TARGET_UVK5_V2=1 ENABLE_MDC1200=1 ENABLE_MDC1200_EDIT=1 ENABLE_MDC1200_CONTACT=1 ENABLE_FLEETSYNC=1 ENABLE_FMRADIO=1 ENABLE_SPECTRUM=1
 
       - name: Validate V2 image layout
         run: |
