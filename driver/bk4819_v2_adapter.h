@@ -13,6 +13,12 @@
 #include <stdint.h>
 #include "bk4819_bus_v2.h"
 #include "gpio_v2.h"
+#include "systick.h"
+
+static inline void SYSTEM_DelayMs(uint32_t ms)
+{
+    SYSTICK_DelayUs(ms * 1000U);
+}
 
 #define BK4819_TARGET_AUDIO_PATH_PIN ((uint16_t)(1U << 7))
 #define BK4819_TARGET_AudioPathEnable() GPIO_V2_Set(GPIOB, BK4819_TARGET_AUDIO_PATH_PIN)
