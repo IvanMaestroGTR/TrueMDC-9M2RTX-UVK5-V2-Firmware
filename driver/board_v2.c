@@ -39,7 +39,7 @@ void BOARD_V2_GPIO_Init(void)
  * Keep each conversion single-channel; reading one DR value for a two-channel
  * sequence would incorrectly report the same measurement for both quantities.
  */
-#include "device.h"
+#include "../bsp/py32f030/device.h"
 
 void BOARD_V2_ADC_Init(void)
 {
