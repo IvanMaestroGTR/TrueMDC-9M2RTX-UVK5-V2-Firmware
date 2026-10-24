@@ -259,6 +259,10 @@ void BK4819_WriteRegister(BK4819_REGISTER_t Register, uint16_t Data) {
 }
 
 void BK4819_WriteU8(uint8_t Data) {
+#ifdef TARGET_UVK5_V2
+    BK4819_TARGET_WriteU8(Data);
+#else
+
     unsigned int i;
 
     GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
@@ -277,9 +281,14 @@ void BK4819_WriteU8(uint8_t Data) {
         GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
         SYSTICK_Delay250ns(1);
     }
+#endif
 }
 
 void BK4819_WriteU16(uint16_t Data) {
+#ifdef TARGET_UVK5_V2
+    BK4819_TARGET_WriteU16(Data);
+#else
+
     unsigned int i;
 
     GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
@@ -298,6 +307,7 @@ void BK4819_WriteU16(uint16_t Data) {
         GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
         SYSTICK_Delay250ns(1);
     }
+#endif
 }
 
 void BK4819_SetAGC(bool enable) {
