@@ -11,7 +11,7 @@
  * This file is not selected by the V1 build. It requires the PY32F030 CMSIS
  * device headers to be added to this port before it can compile.
  */
-#include "py32f0xx.h"
+#include "../bsp/py32f030/device.h"
 
 #ifndef HSE_VALUE
 #define HSE_VALUE 24000000U
