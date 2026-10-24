@@ -222,3 +222,6 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 
 - Replaced the remaining event-loop PTT reads in `app/app.c` with the target-specific PTT abstraction, so V2 uses PA3 throughout debounce/transmit state handling rather than falling through to GPIOC.
 - Guarded the remaining periodic battery ADC reads and reduced-service ADC check from the V2 path. Until the PY32 ADC is ported, the V2 app does not call the V1 DP32 battery sampling routine from its main loop.
+
+
+- Also updated the legacy `GetKey()` PTT fallback to use PA3 on V2; the non-V2 GPIOC path remains unchanged.
