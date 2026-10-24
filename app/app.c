@@ -47,7 +47,9 @@
 #include "app/uart.h"
 #endif
 
+#ifndef TARGET_UVK5_V2
 #include "ARMCM0.h"
+#endif
 #include "audio.h"
 #include "board.h"
 #ifndef TARGET_UVK5_V2
