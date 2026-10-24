@@ -22,16 +22,46 @@
 #include "driver/gpio.h"
 #include "driver/spi.h"
 #include "driver/st7565.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/system.h"
+#endif
 #include "misc.h"
 #include "settings.h"   // for gEeprom.SCREEN_INVERT
+#ifdef TARGET_UVK5_V2
+#define LCD_CS_LOW()   GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 9))
+#define LCD_CS_HIGH()  GPIO_V2_Set(GPIOA, (uint16_t)(1U << 9))
+#define LCD_A0_LOW()   GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 11))
+#define LCD_A0_HIGH()  GPIO_V2_Set(GPIOA, (uint16_t)(1U << 11))
+#define LCD_SCK_LOW()  GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 10))
+#define LCD_SCK_HIGH() GPIO_V2_Set(GPIOA, (uint16_t)(1U << 10))
+#define LCD_SDA_LOW()  GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 12))
+#define LCD_SDA_HIGH() GPIO_V2_Set(GPIOA, (uint16_t)(1U << 12))
+#define LCD_TX_BYTE(value) do { uint8_t lcd_b_ = (uint8_t)(value); for (unsigned lcd_i_ = 0; lcd_i_ < 8U; ++lcd_i_) { LCD_SCK_LOW(); if ((lcd_b_ & 0x80U) != 0U) LCD_SDA_HIGH(); else LCD_SDA_LOW(); LCD_SCK_HIGH(); lcd_b_ <<= 1; } } while (0)
+#define LCD_TX_WAIT() ((void)0)
+#define LCD_SPI_INIT() do { LCD_CS_HIGH(); LCD_A0_HIGH(); LCD_SCK_HIGH(); LCD_SDA_HIGH(); } while (0)
+#define LCD_SPI_BEGIN() LCD_CS_LOW()
+#define LCD_SPI_END() LCD_CS_HIGH()
+#define LCD_RESET_PIN_HIGH() ((void)0)
+#define LCD_RESET_PIN_LOW() ((void)0)
+#else
+#define LCD_A0_LOW() GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_ST7565_A0)
+#define LCD_A0_HIGH() GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_ST7565_A0)
+#define LCD_TX_BYTE(value) do { while ((SPI0->FIFOST & SPI_FIFOST_TFF_MASK) != SPI_FIFOST_TFF_BITS_NOT_FULL) {} SPI0->WDR = (value); } while (0)
+#define LCD_TX_WAIT() SPI_WaitForUndocumentedTxFifoStatusBit()
+#define LCD_SPI_INIT() SPI0_Init()
+#define LCD_SPI_BEGIN() SPI_ToggleMasterMode(&SPI0->CR, false)
+#define LCD_SPI_END() SPI_ToggleMasterMode(&SPI0->CR, true)
+#define LCD_RESET_PIN_HIGH() GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_ST7565_RES)
+#define LCD_RESET_PIN_LOW() GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_ST7565_RES)
+#endif
+
 
 uint8_t gStatusLine[LCD_WIDTH];
 uint8_t gFrameBuffer[FRAME_LINES][LCD_WIDTH];
 
 static void DrawLine(uint8_t column, uint8_t line, const uint8_t *lineBuffer, unsigned size_defVal) {
     ST7565_SelectColumnAndLine(column + 4, line);
-    GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_ST7565_A0);
+    LCD_A0_HIGH();
     for (unsigned i = 0; i < size_defVal; i++) {
         uint8_t byte = lineBuffer ? lineBuffer[i] : size_defVal;
         if (gEeprom.SCREEN_INVERT)
@@ -39,14 +69,14 @@ static void DrawLine(uint8_t column, uint8_t line, const uint8_t *lineBuffer, un
         while ((SPI0->FIFOST & SPI_FIFOST_TFF_MASK) != SPI_FIFOST_TFF_BITS_NOT_FULL) {}
         SPI0->WDR = byte;
     }
-    SPI_WaitForUndocumentedTxFifoStatusBit();
+    LCD_TX_WAIT();
 }
 
 void
 ST7565_DrawLine(const unsigned int Column, const unsigned int Line, const uint8_t *pBitmap, const unsigned int Size) {
-    SPI_ToggleMasterMode(&SPI0->CR, false);
+    LCD_SPI_BEGIN();
     DrawLine(Column, Line, pBitmap, Size);
-    SPI_ToggleMasterMode(&SPI0->CR, true);
+    LCD_SPI_END();
 }
 
 void ST7565_BlitFullScreen(void) {
@@ -146,7 +176,7 @@ uint8_t cmds[] = {
 };
 
 void ST7565_Init(void) {
-    SPI0_Init();
+    LCD_SPI_INIT();
     ST7565_HardwareReset();
     SPI_ToggleMasterMode(&SPI0->CR, false);
     ST7565_WriteByte(ST7565_CMD_SOFTWARE_RESET);   // software reset
@@ -182,27 +212,23 @@ void ST7565_FixInterfGlitch(void) {
 }
 
 void ST7565_HardwareReset(void) {
-    GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_ST7565_RES);
+    LCD_RESET_PIN_HIGH();
     SYSTEM_DelayMs(1);
-    GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_ST7565_RES);
+    LCD_RESET_PIN_LOW();
     SYSTEM_DelayMs(20);
     GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_ST7565_RES);
     SYSTEM_DelayMs(120);
 }
 
 void ST7565_SelectColumnAndLine(uint8_t Column, uint8_t Line) {
-    GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_ST7565_A0);
-    while ((SPI0->FIFOST & SPI_FIFOST_TFF_MASK) != SPI_FIFOST_TFF_BITS_NOT_FULL) {}
-    SPI0->WDR = Line + 176;
-    while ((SPI0->FIFOST & SPI_FIFOST_TFF_MASK) != SPI_FIFOST_TFF_BITS_NOT_FULL) {}
-    SPI0->WDR = ((Column >> 4) & 0x0F) | 0x10;
-    while ((SPI0->FIFOST & SPI_FIFOST_TFF_MASK) != SPI_FIFOST_TFF_BITS_NOT_FULL) {}
-    SPI0->WDR = ((Column >> 0) & 0x0F);
+    LCD_A0_LOW();
+    LCD_TX_BYTE(Line + 176);
+    LCD_TX_BYTE(((Column >> 4) & 0x0F) | 0x10);
+    LCD_TX_BYTE((Column >> 0) & 0x0F);
     SPI_WaitForUndocumentedTxFifoStatusBit();
 }
 
 void ST7565_WriteByte(uint8_t Value) {
     GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_ST7565_A0);
-    while ((SPI0->FIFOST & SPI_FIFOST_TFF_MASK) != SPI_FIFOST_TFF_BITS_NOT_FULL) {}
-    SPI0->WDR = Value;
+    LCD_TX_BYTE(Value);
 }
