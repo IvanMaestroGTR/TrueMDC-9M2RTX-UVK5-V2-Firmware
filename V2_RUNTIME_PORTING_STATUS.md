@@ -130,3 +130,20 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
   board GPIO setup. Its result is pending; do not treat the V2 firmware as
   boot-tested or flashable until that CI passes and the remaining peripherals
   and application dependencies are ported.
+
+
+## BK4819 bus foundation (2026-10-24)
+
+- Added `driver/bk4819_bus_v2.c/.h`, a separate PY32F030 bit-banged bus
+  implementation using the V2 reference pin mapping PB3=SCN, PB4=SCL, PB5=SDA.
+  It provides byte/word writes and register read/write primitives and uses the
+  V2 SysTick delay API.
+- The V2 smoke workflow now compiles and links the bus driver as well as the
+  startup, clock, SysTick, GPIO and board-GPIO layers.
+- This bus module is intentionally isolated: the legacy `driver/bk4819.c`
+  still contains DP32G030 GPIO/PORTCON register accesses and has not been
+  switched to this API. Before integrating it, protocol timing and read-turnaround
+  behavior must be reviewed on the V2 hardware/reference, and the old direct
+  register accesses must be routed through a target-specific abstraction.
+- Latest expanded workflow is pending. A compile/link pass would establish
+  only that these isolated objects build together, not that RF signalling works.
