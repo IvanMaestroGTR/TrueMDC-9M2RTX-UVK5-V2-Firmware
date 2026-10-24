@@ -405,11 +405,17 @@ void UI_MAIN_TimeSlice500ms(void) {
         UI_MAIN_PrintAGC(true);
         return;
 #endif
+#ifdef ENABLE_FMRADIO
         if (gFmRadioMode) {
             gUpdateDisplay = true;
         } else if (FUNCTION_IsRx()) {
             DisplayRSSIBar(true);
         }
+#else
+        if (FUNCTION_IsRx()) {
+            DisplayRSSIBar(true);
+        }
+#endif
     }
 }
 // ***************************************************************************
@@ -458,7 +464,11 @@ void UI_DisplayMain(void) {
 
     unsigned int activeTxVFO = gRxVfoIsActive ? gEeprom.RX_VFO : gEeprom.TX_VFO;
     for (unsigned int vfo_num = 0; vfo_num < 2; vfo_num++) {
+#ifdef ENABLE_FMRADIO
         const bool isFmVFO = gFmRadioMode && vfo_num == (gEeprom.TX_VFO ^ 1);
+#else
+        const bool isFmVFO = false;
+#endif
         const unsigned int line0 = 0;  // text screen line
         const unsigned int line1 = 4;
 
@@ -560,6 +570,7 @@ void UI_DisplayMain(void) {
             }
         }
 
+#ifdef ENABLE_FMRADIO
         if (isFmVFO) {
             const unsigned int x = 2;
             if (gEeprom.FM_IsMrMode) {
@@ -573,9 +584,15 @@ void UI_DisplayMain(void) {
                 sprintf(String, "V-FM");
             }
             UI_PrintStringSmall(String, x, 0, line + 1);
-        } else if (IS_MR_CHANNEL(gEeprom.ScreenChannel[vfo_num])) {    // channel mode
+        } else
+#endif
+        if (IS_MR_CHANNEL(gEeprom.ScreenChannel[vfo_num])) {    // channel mode
             const unsigned int x = 2;
+            #ifdef ENABLE_FMRADIO
             const bool inputting = !gFmRadioMode && gInputBoxIndex != 0 && gEeprom.TX_VFO == vfo_num;
+#else
+            const bool inputting = gInputBoxIndex != 0 && gEeprom.TX_VFO == vfo_num;
+#endif
             if (!inputting) {
                 const char *format = last_rx_vfo == vfo_num ? "M%u." : "M%u";
                 sprintf(String, format, gEeprom.ScreenChannel[vfo_num] + 1);
@@ -622,7 +639,11 @@ void UI_DisplayMain(void) {
 
             if (state < ARRAY_SIZE(VfoStateStr))
                 UI_PrintStringSmall(VfoStateStr[state], 31, 0, line);
+#ifdef ENABLE_FMRADIO
         } else if (!gFmRadioMode && gInputBoxIndex > 0 && IS_FREQ_CHANNEL(gEeprom.ScreenChannel[vfo_num]) &&
+#else
+        } else if (gInputBoxIndex > 0 && IS_FREQ_CHANNEL(gEeprom.ScreenChannel[vfo_num]) &&
+#endif
                    gEeprom.TX_VFO == vfo_num) {    // user entering a frequency
 
 
@@ -653,6 +674,7 @@ void UI_DisplayMain(void) {
                     frequency = gEeprom.VfoInfo[vfo_num].pTX->Frequency;
             }
 
+#ifdef ENABLE_FMRADIO
             if (isFmVFO) {
                 uint16_t fmFrequency = gEeprom.FM_FrequencyPlaying;
 
@@ -661,22 +683,17 @@ void UI_DisplayMain(void) {
                     const char *ascii = INPUTBOX_GetAscii();
 
                     if (gInputBox[0] == 1) {
-                        // 1xx is always the MHz portion of a 100.x MHz entry.
                         snprintf(String, sizeof(String), "%c%c%c.%c%c%c",
                                  ascii[0], ascii[1], ascii[2], ascii[3], ascii[4], ascii[5]);
                     } else {
-                        // 0xx.xxx entry: 0--.--- -> 09-.--- -> 092.---
-                        // -> 092.9--.
                         snprintf(String, sizeof(String), "0%c%c.%c%c%c",
                                  ascii[0], ascii[1], ascii[2], ascii[3], ascii[4]);
                     }
 
                     if (gInputBoxIndex >= 3) {
                         uint32_t inputFrequency = StrToUL(ascii);
-
                         if (gInputBoxIndex == 3 && gInputBox[0] == 1)
                             inputFrequency *= 10;
-
                         if (inputFrequency >= gEeprom.FM_LowerLimit &&
                             inputFrequency <= gEeprom.FM_UpperLimit)
                             fmFrequency = (uint16_t)inputFrequency;
@@ -684,12 +701,12 @@ void UI_DisplayMain(void) {
 
                     UI_DisplayFrequency(String, 32, line, false);
                 } else {
-                    sprintf(String, "%03u.%03u",
-                            fmFrequency / 10,
-                            (fmFrequency % 10) * 100);
+                    sprintf(String, "%03u.%03u", fmFrequency / 10, (fmFrequency % 10) * 100);
                     UI_DisplayFrequency(String, 32, line, true);
                 }
-            } else if (IS_MR_CHANNEL(gEeprom.ScreenChannel[vfo_num])) {    // it's a channel
+            } else
+#endif
+            if (IS_MR_CHANNEL(gEeprom.ScreenChannel[vfo_num])) {    // it's a channel
 
                 // show the scan list assigment symbols
 
@@ -1068,9 +1085,17 @@ void UI_DisplayMain(void) {
                             channel[0] = '0' + gInputBox[0];
                         if (gInputBoxIndex > 1)
                             channel[1] = '0' + gInputBox[1];
+#ifdef ENABLE_FMRADIO
                         snprintf(String, sizeof(String), "Save? FM%s", channel);
+#else
+                        snprintf(String, sizeof(String), "Save? %s", channel);
+#endif
                     } else {
+#ifdef ENABLE_FMRADIO
                         snprintf(String, sizeof(String), "Saved FM%02u", gFM_ChannelPosition + 1);
+#else
+                        snprintf(String, sizeof(String), "Saved");
+#endif
                     }
                     pToastStr = String;
                     break;
@@ -1079,15 +1104,27 @@ void UI_DisplayMain(void) {
                         char channel[3];
                         if (gInputBoxIndex == 0) {
                             // Start with the currently selected channel.
+#ifdef ENABLE_FMRADIO
                             snprintf(channel, sizeof(channel), "%02u", gFM_ChannelPosition + 1);
+#else
+                            snprintf(channel, sizeof(channel), "__");
+#endif
                         } else {
                             channel[0] = (gInputBoxIndex > 0) ? '0' + gInputBox[0] : '_';
                             channel[1] = (gInputBoxIndex > 1) ? '0' + gInputBox[1] : '_';
                             channel[2] = '\0';
                         }
+#ifdef ENABLE_FMRADIO
                         snprintf(String, sizeof(String), "Delete? FM%s", channel);
+#else
+                        snprintf(String, sizeof(String), "Delete? %s", channel);
+#endif
                     } else {
+#ifdef ENABLE_FMRADIO
                         snprintf(String, sizeof(String), "Deleted FM%02u", gFM_ChannelPosition + 1);
+#else
+                        snprintf(String, sizeof(String), "Deleted");
+#endif
                     }
                     pToastStr = String;
                     break;
