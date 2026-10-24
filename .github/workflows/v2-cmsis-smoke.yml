@@ -46,6 +46,13 @@ jobs:
             -std=c11 -Wall -Wextra -Werror -ffreestanding \
             -Ibsp/py32f030 -Idriver \
             -c driver/board_v2.c -o /tmp/board_v2.o
+      - name: Compile V2 BK4819 bus driver
+        run: |
+          arm-none-eabi-gcc \
+            -mcpu=cortex-m0plus -mthumb \
+            -std=c11 -Wall -Wextra -Werror -ffreestanding \
+            -Ibsp/py32f030 -Idriver \
+            -c driver/bk4819_bus_v2.c -o /tmp/bk4819_bus_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
@@ -68,7 +75,7 @@ jobs:
             -Wl,--build-id=none -Wl,--gc-sections \
             -Wl,-Map=/tmp/v2-runtime-smoke.map \
             -T firmware_v2.ld \
-            /tmp/start_v2.o /tmp/system_v2.o /tmp/systick_v2.o /tmp/gpio_v2.o /tmp/board_v2.o /tmp/v2_smoke_stubs.o \
+            /tmp/start_v2.o /tmp/system_v2.o /tmp/systick_v2.o /tmp/gpio_v2.o /tmp/board_v2.o /tmp/bk4819_bus_v2.o /tmp/v2_smoke_stubs.o \
             -lgcc -o /tmp/v2-runtime-smoke.elf
           arm-none-eabi-size /tmp/v2-runtime-smoke.elf
           arm-none-eabi-readelf -h /tmp/v2-runtime-smoke.elf
