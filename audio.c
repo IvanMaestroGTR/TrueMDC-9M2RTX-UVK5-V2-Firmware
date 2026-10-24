@@ -30,10 +30,10 @@
 #include "driver/bk4819.h"
 #ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
-#include "driver/system.h"
 #else
 #include "driver/gpio_v2.h"
 #endif
+#include "driver/system.h"
 #include "driver/systick.h"
 #include "functions.h"
 #include "misc.h"
