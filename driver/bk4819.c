@@ -23,6 +23,9 @@
 #include "../bsp/dp32g030/gpio.h"
 #include "../bsp/dp32g030/portcon.h"
 #include "bk4819.h"
+#ifdef TARGET_UVK5_V2
+#include "bk4819_v2_adapter.h"
+#endif
 #include "gpio.h"
 #include "system.h"
 #include "systick.h"
