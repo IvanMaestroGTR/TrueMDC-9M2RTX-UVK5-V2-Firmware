@@ -24,7 +24,9 @@
 
 #if !defined(ENABLE_OVERLAY)
 
+#ifndef TARGET_UVK5_V2
 #include "ARMCM0.h"
+#endif
 
 #endif
 
@@ -34,7 +36,9 @@
 #include "app/scanner.h"
 #include "audio.h"
 #include "board.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "driver/backlight.h"
 #include "driver/bk4819.h"
 #include "driver/eeprom.h"
