@@ -247,3 +247,6 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 
 - Expanded the V2 CI compile sweep to include `radio.c`, `functions.c`, `settings.c`, `helper/battery.c`, `app/mdc1200.c`, and `app/fleetsync.c` in addition to the display, keypad, I²C, EEPROM, voice, and BK4819 files.
 - Guarded the remaining direct DP32 GPIO header includes in the shared radio/functions modules. The purpose of this sweep is to surface remaining cross-target assumptions without waiting for a full link.
+
+
+- The expanded compile sweep reached the shared menu module and found an existing MDC preamble menu `case` with a declaration directly after its label. Wrapped that case in a block and made the lookup table `const`; this is a small source correctness fix discovered by enabling MDC in the V2 compile flags.
