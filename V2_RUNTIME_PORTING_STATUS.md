@@ -171,3 +171,12 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Mapped the legacy audio-path GPIOC bit 4 semantic to the V2 reference's GPIOB7 audio-path output, while retaining the original GPIOC bit for V1 builds.
 - Added a CI step that compiles `driver/bk4819.c` with `TARGET_UVK5_V2`, MDC1200 and FleetSync enabled. The workflow is currently running; its compile result has not yet been confirmed.
 - This integration only addresses the BK4819 register bus and audio-path pin. The rest of the application, other DP32-dependent modules, interrupt mapping, LCD, keyboard, ADC calibration, flash settings and full image link are not ported yet. Do not flash this as a complete V2 image.
+
+
+## Shared application-layer V2 adaptation (2026-10-24)
+
+- `main.c` now selects `BOARD_V2_GPIO_Init()` and avoids the V1 DP32 clock-gate register writes when `TARGET_UVK5_V2` is defined. The original V1 path remains behind the default branch.
+- The application startup's voice-chip reset is selected through a target-specific macro: V2 uses the V2 GPIO API for PA12; V1 keeps the original DP32 GPIO call.
+- `app/app.c` now reads the PTT state from V2 PA3 through `GPIO_V2_Read(GPIOA)`; V1 retains its original GPIOC PTT input. DP32 GPIO/system headers are excluded from this application translation unit for V2 builds.
+- `driver/system_v2.c` now provides the shared `SYSTEM_DelayMs()` API using the V2 SysTick timer, so shared application startup delays don't require the DP32 system driver.
+- This is application source adaptation, not a claim that the whole app is ready to execute: EEPROM/I2C, ADC/battery readings, display SPI, keyboard matrix, audio/voice, backlight PWM, and the remaining DP32-dependent drivers still need their V2 implementations. The complete application image has not been built or tested on hardware.
