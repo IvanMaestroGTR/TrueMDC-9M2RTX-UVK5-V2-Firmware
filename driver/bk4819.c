@@ -180,6 +180,7 @@ void BK4819_Init(void) {
     BK4819_WriteRegister(BK4819_REG_3F, 0);
 }
 
+#ifndef TARGET_UVK5_V2
 static uint16_t BK4819_ReadU16(void) {
     unsigned int i;
     uint16_t Value;
@@ -202,6 +203,7 @@ static uint16_t BK4819_ReadU16(void) {
 
     return Value;
 }
+#endif
 
 uint16_t BK4819_ReadRegister(BK4819_REGISTER_t Register) {
 #ifdef TARGET_UVK5_V2
