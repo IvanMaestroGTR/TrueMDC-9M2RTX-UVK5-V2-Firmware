@@ -86,10 +86,32 @@ void SystemCoreClockUpdate(void)
 
 void SystemInit(void)
 {
-    /* Match the F4HWN V2 reference clock setup: calibrated 24 MHz HSI. */
+    /*
+     * Match the actual V2 reference startup sequence. The legacy application
+     * Main() cannot be entered until the PY32 clock tree is configured:
+     * it used to do DP32-specific clock-gate writes before SYSTICK_Init().
+     */
+    RCC->APBENR2 |= RCC_APBENR2_SYSCFGEN;
+    RCC->APBENR1 |= RCC_APBENR1_PWREN;
+
+    /* Select calibrated 24 MHz HSI while preserving the factory trim bits. */
     RCC->ICSCR = (RCC->ICSCR & 0xFFFF0000U) |
                  (4U << RCC_ICSCR_HSI_FS_Pos) |
                  ((*(const uint32_t *)0x1FFF0F04U) & 0x1FFFU);
+
+    RCC->CR |= RCC_CR_HSION;
+    while ((RCC->CR & RCC_CR_HSIRDY) == 0U) {
+        /* Wait until the internal oscillator is stable before switching. */
+    }
+
+    /* HSI system clock, AHB/APB undivided; 24 MHz requires zero wait states. */
+    RCC->CFGR &= ~(RCC_CFGR_SW | RCC_CFGR_HPRE | RCC_CFGR_PPRE);
+    while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_HSI) {
+        /* Wait until HSI is confirmed as the system clock. */
+    }
+    FLASH->ACR &= ~FLASH_ACR_LATENCY;
+
+    SystemCoreClock = 24000000U;
 
 #ifdef VECT_TAB_SRAM
     SCB->VTOR = SRAM_BASE | VECT_TAB_OFFSET;
