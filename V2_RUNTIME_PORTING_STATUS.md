@@ -187,3 +187,10 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Ported the shared keypad scanner in `driver/keyboard.c` to the V2 reference matrix: rows PF0/PF1/PA0/PA1; columns PA5/PA6/PA7/PB0. The V2 branch uses `GPIO_V2_Read/Set/Clear`, retains the same key map and debounce sampling, and avoids toggling the V1 I2C bus.
 - Kept the original DP32 keypad implementation intact under the non-V2 branch. The V1 keypad table and GPIO includes are excluded when `TARGET_UVK5_V2` is selected.
 - This advances the application input path, but the V2 GPIO initialization must still be followed by a complete V2 board/peripheral init. LCD/SPI, audio, backlight PWM, ADC/battery, EEPROM/I2C and other device drivers remain pending.
+
+
+## Voice and keypad shared-pin port (2026-10-24)
+
+- Ported `audio.c` voice-chip strobe/data control to the verified V2 pins: voice strobe PA7 and data PB0. V1 GPIO macros remain unchanged under the non-V2 branch.
+- Corrected the V2 application startup's voice-pin idle reset to PA7 low / PB0 high, matching the V2 reference driver's voice pin definitions.
+- Extended the app compile smoke step to include `main.c`, `app/app.c`, `driver/keyboard.c`, and `audio.c` with `TARGET_UVK5_V2`. The job is not being treated as a blocker for continuing source port work.
