@@ -162,3 +162,12 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Expanded `.github/workflows/v2-cmsis-smoke.yml` so the minimal V2 entry point references `SYSTICK_Init`, `BOARD_V2_GPIO_Init`, and every public BK4819 V2 bus operation. This prevents linker garbage collection from silently excluding the bus object and gives a stronger API-level compile/link check.
 - CI passed on commit `b2f9364b7ba89ddcdd34c48e0097e87580e46130`: both `compile-v2-runtime` and the independent V1 `build` job succeeded. The 1 us bus timing change and all isolated V2 support objects compile and link together.
 - This is still a link smoke test, not execution on a radio. The stub entry point is never run on target; the bus is not yet wired into `driver/bk4819.c`, and the application is not a complete V2 image.
+
+
+## BK4819 driver bus integration started (2026-10-24)
+
+- Added `driver/bk4819_v2_adapter.h` as a target-selectable adapter over the verified PB3/4/5 bus and V2 SysTick timing API.
+- Updated `driver/bk4819.c` so `TARGET_UVK5_V2` selects the V2 bus for register read/write and byte/word operations, and uses the V2 bus initializer. The legacy DP32 transaction path and timing remain selected when the macro is absent.
+- Mapped the legacy audio-path GPIOC bit 4 semantic to the V2 reference's GPIOB7 audio-path output, while retaining the original GPIOC bit for V1 builds.
+- Added a CI step that compiles `driver/bk4819.c` with `TARGET_UVK5_V2`, MDC1200 and FleetSync enabled. The workflow is currently running; its compile result has not yet been confirmed.
+- This integration only addresses the BK4819 register bus and audio-path pin. The rest of the application, other DP32-dependent modules, interrupt mapping, LCD, keyboard, ADC calibration, flash settings and full image link are not ported yet. Do not flash this as a complete V2 image.
