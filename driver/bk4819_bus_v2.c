@@ -9,7 +9,8 @@
 
 static void delay_edge(void)
 {
-    SYSTICK_Delay250ns(1U);
+    /* Match the V2 reference BK4819 bit-bang timing (1 us per edge). */
+    SYSTICK_DelayUs(1U);
 }
 
 void BK4819_V2_BusInit(void)
