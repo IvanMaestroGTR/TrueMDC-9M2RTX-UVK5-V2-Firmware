@@ -68,6 +68,7 @@ jobs:
           arm-none-eabi-gcc $COMMON_FLAGS -c app/app.c -o /tmp/app_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/keyboard.c -o /tmp/keyboard_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c audio.c -o /tmp/audio_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c driver/st7565.c -o /tmp/st7565_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
