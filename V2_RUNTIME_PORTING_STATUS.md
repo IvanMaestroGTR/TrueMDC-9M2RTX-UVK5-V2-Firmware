@@ -15,9 +15,9 @@ remain unchanged.
 
 1. `start_v2.S` is not selected by the Makefile. Do not change the default V1
    startup selection until the V2 target is explicitly selected.
-2. The referenced `SystemInit` implementation and PY32 CMSIS device headers
-   are not yet part of this TrueMDC branch. The V2 runtime must supply them,
-   including the vector-table offset configuration.
+2. `driver/system_v2.c` and the PY32 CMSIS device headers are now present
+   under `bsp/py32f030/`. A smoke workflow compiles the system file and startup,
+   then links a minimal image. This validates the scaffold, not the application.
 3. Existing application ISRs use DP32 names and NVIC IRQ identifiers. They
    must be mapped to the actual PY32 peripherals; the current weak default
    handlers are placeholders, not functional interrupt bindings.
@@ -52,3 +52,18 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - The reference repository's PY32 headers and HAL are under `Drivers/`, not
   `Core/Inc/`. Integration should bring in the matching device/CMSIS support
   and licensed vendor driver sources rather than fabricate register maps.
+
+
+## Runtime smoke test (2026-10-24)
+
+- GitHub Actions run `40089751615` passed: the PY32F030 system initialization
+  compiled with warnings treated as errors, the V2 startup assembled, and the
+  startup/system objects linked against `firmware_v2.ld` with minimal stubs.
+- The independent V1 build workflow also passed on the same branch commit.
+- The initial `SystemCoreClock` value is explicitly 24 MHz to match the HSI
+  frequency selected by `SystemInit`; the previous 8 MHz initial value was
+  inconsistent until `SystemCoreClockUpdate` ran.
+- This remains a runtime smoke test only. It does not compile or validate the
+  DP32-coupled application drivers and does not produce a flashable TrueMDC V2
+  image. Next milestone is a PY32 board/peripheral layer and a real V2-linked
+  application, not simply enabling the V2 startup in the normal build.
