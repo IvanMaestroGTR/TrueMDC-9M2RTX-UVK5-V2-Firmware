@@ -32,3 +32,23 @@ A V2 image is not build-ready or flash-ready. Before enabling a V2 build target,
 port and compile the PY32 startup/runtime, GPIO/pin mux, clock/timing, SPI, I2C,
 ADC, UART/DMA, timers/RTC, flash/EEPROM and interrupt handling. Then build from
 a clean tree, inspect the map and image size, and test on a recoverable device.
+
+
+## Follow-up audit (2026-10-24)
+
+- Corrected `firmware_v2.ld` entry point from the V1 symbol
+  `HandlerReset` to `Reset_Handler`, matching `start_v2.S`.
+- Explicitly retain `.isr_vector` in the linker script so the PY32 vector
+  table is not discarded when section garbage collection is enabled.
+- The V1 startup's `DATA_Init` and `BSS_Init` are compatible in concept with
+  the V2 scaffold's calls, because the V2 linker keeps the matching
+  `flash_data_start`, `sram_data_start/end`, and `__bss_start__/end`
+  symbols. This still needs a real link test.
+- The legacy application entry point `Main` performs DP32-specific clock-gate
+  writes before peripheral initialization. Therefore merely switching startup
+  and linker scripts would be unsafe; the main initialization and every
+  register-level BSP dependency must be converted before a V2 build can be
+  selected.
+- The reference repository's PY32 headers and HAL are under `Drivers/`, not
+  `Core/Inc/`. Integration should bring in the matching device/CMSIS support
+  and licensed vendor driver sources rather than fabricate register maps.
