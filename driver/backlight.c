@@ -22,6 +22,7 @@
 #include "driver/gpio.h"
 #else
 #include "driver/gpio_v2.h"
+#include "bsp/py32f030/device.h"
 #endif
 #include "settings.h"
 
@@ -41,11 +42,8 @@ static void BACKLIGHT_ApplyBrightness(uint8_t brightness) {
     currentBrightness = brightness;
     backlightOn = brightness > 0;
 #ifdef TARGET_UVK5_V2
-    /* V2 backlight is GPIOA8; hardware PWM dimming is not yet ported. */
-    if (brightness > 0U)
-        GPIO_V2_Set(GPIOA, (uint16_t)(1U << 8));
-    else
-        GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 8));
+    /* V2 reference: PA8 / AF2 = TIM1_CH1, 1 kHz PWM. */
+    TIM1->CCR1 = ((uint32_t)brightness * (TIM1->ARR + 1U)) / 255U;
 #else
     if (brightness >= 10u) {
         PWM_PLUS0_CH0_COMP = PWM_PLUS0_PERIOD;
@@ -57,9 +55,22 @@ static void BACKLIGHT_ApplyBrightness(uint8_t brightness) {
 
 void BACKLIGHT_InitHardware() {
 #ifdef TARGET_UVK5_V2
+    RCC->APBENR2 |= RCC_APBENR2_TIM1EN;
+    RCC->APBRSTR2 |= RCC_APBRSTR2_TIM1RST;
+    RCC->APBRSTR2 &= ~RCC_APBRSTR2_TIM1RST;
     (void)GPIO_V2_Configure(GPIOA, (uint16_t)(1U << 8),
-        GPIO_V2_MODE_OUTPUT, GPIO_V2_PULL_UP, 3U, 0U);
-    GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 8));
+        GPIO_V2_MODE_ALTERNATE, GPIO_V2_PULL_NONE, 3U, 0U);
+    GPIOA->AFRH = (GPIOA->AFRH & ~GPIO_AFRH_AFSEL8_Msk) |
+                  (2UL << GPIO_AFRH_AFSEL8_Pos);
+    TIM1->CR1 = 0U;
+    TIM1->PSC = (SystemCoreClock / 100000U) - 1U;
+    TIM1->ARR = 99U; /* 1 kHz PWM at a 100 kHz timer tick. */
+    TIM1->CCR1 = 0U;
+    TIM1->CCMR1 = (TIM1->CCMR1 & ~0xFFU) | (6UL << 4) | (1UL << 3);
+    TIM1->CCER = (TIM1->CCER & ~0xFU) | 1UL;
+    TIM1->BDTR |= (1UL << 15); /* Advanced timer main output enable. */
+    TIM1->EGR = 1UL;
+    TIM1->CR1 |= 1UL;
 #else
     // 48MHz / 94 / 1024 ~ 500Hz
     const uint32_t PWM_FREQUENCY_HZ = 25000;
