@@ -62,13 +62,27 @@ jobs:
         run: |
           cat > /tmp/v2_smoke_stubs.c <<'EOF'
           #include <stdint.h>
+          #include "board_v2.h"
+          #include "bk4819_bus_v2.h"
+          #include "systick.h"
           void DATA_Init(void) {}
           void BSS_Init(void) {}
-          void Main(void) { for (;;) {} }
+          void Main(void)
+          {
+              SYSTICK_Init();
+              BOARD_V2_GPIO_Init();
+              BK4819_V2_BusInit();
+              BK4819_V2_WriteU8(0x00U);
+              BK4819_V2_WriteU16(0x0000U);
+              BK4819_V2_WriteRegister(0x00U, 0x0000U);
+              (void)BK4819_V2_ReadRegister(0x0CU);
+              for (;;) {}
+          }
           EOF
           arm-none-eabi-gcc \
             -mcpu=cortex-m0plus -mthumb \
             -std=c11 -ffreestanding -fno-builtin \
+            -Ibsp/py32f030 -Idriver \
             -c /tmp/v2_smoke_stubs.c -o /tmp/v2_smoke_stubs.o
           arm-none-eabi-gcc \
             -mcpu=cortex-m0plus -mthumb -nostdlib \
@@ -79,4 +93,4 @@ jobs:
             -lgcc -o /tmp/v2-runtime-smoke.elf
           arm-none-eabi-size /tmp/v2-runtime-smoke.elf
           arm-none-eabi-readelf -h /tmp/v2-runtime-smoke.elf
-          arm-none-eabi-nm /tmp/v2-runtime-smoke.elf | grep -E 'Reset_Handler|g_pfnVectors|SystemInit|Main'
+          arm-none-eabi-nm /tmp/v2-runtime-smoke.elf | grep -E 'Reset_Handler|g_pfnVectors|SystemInit|Main|BK4819_V2_(BusInit|ReadRegister|WriteRegister)|BOARD_V2_GPIO_Init|SYSTICK_Init'
