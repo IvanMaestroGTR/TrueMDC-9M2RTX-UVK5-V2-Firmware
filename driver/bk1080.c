@@ -14,11 +14,21 @@
  *     limitations under the License.
  */
 
-#include "bsp/dp32g030/gpio.h"
 #include "bk1080.h"
-#include "driver/gpio.h"
 #include "driver/i2c.h"
+#ifdef TARGET_UVK5_V2
+#include "driver/gpio_v2.h"
+#include "driver/systick.h"
+#define BK1080_ENABLE()  GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 13))
+#define BK1080_DISABLE() GPIO_V2_Set(GPIOA, (uint16_t)(1U << 13))
+#define SYSTEM_DelayMs(ms) SYSTICK_DelayUs((uint32_t)(ms) * 1000U)
+#else
+#include "bsp/dp32g030/gpio.h"
+#include "driver/gpio.h"
 #include "driver/system.h"
+#define BK1080_ENABLE()  GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_BK1080)
+#define BK1080_DISABLE() GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_BK1080)
+#endif
 #include "frequencies.h"
 #include "misc.h"
 
@@ -112,7 +122,7 @@ void BK1080_Init(const uint16_t frequency, const bool initialise) {
 
     if (initialise) {    // init and enable the chip
 
-        GPIO_ClearBit(&GPIOB->DATA, GPIOB_PIN_BK1080);
+        BK1080_ENABLE();
 
         if (!is_init) {
             for (i = 0; i < ARRAY_SIZE(BK1080_RegisterTable); i++)
@@ -137,7 +147,7 @@ void BK1080_Init(const uint16_t frequency, const bool initialise) {
 
         BK1080_WriteRegister(BK1080_REG_02_POWER_CONFIGURATION,
                              (1u << 9) | (1u << 6) | (1u << 0)); // 0x0241); // 0000 0010 0100 0001
-        GPIO_SetBit(&GPIOB->DATA, GPIOB_PIN_BK1080);
+        BK1080_DISABLE();
     }
 }
 
