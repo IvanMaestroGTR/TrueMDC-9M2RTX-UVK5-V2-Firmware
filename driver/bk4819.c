@@ -102,9 +102,13 @@ __inline uint16_t scale_freq(const uint16_t freq) {
 }
 
 void BK4819_Init(void) {
+#ifdef TARGET_UVK5_V2
+    BK4819_TARGET_BusInit();
+#else
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCN);
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SDA);
+#endif
 
     BK4819_WriteRegister(BK4819_REG_00, 0x8000);
     BK4819_WriteRegister(BK4819_REG_00, 0x0000);
