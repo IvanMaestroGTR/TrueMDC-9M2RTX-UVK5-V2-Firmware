@@ -53,6 +53,14 @@ jobs:
             -std=c11 -Wall -Wextra -Werror -ffreestanding \
             -Ibsp/py32f030 -Idriver \
             -c driver/bk4819_bus_v2.c -o /tmp/bk4819_bus_v2.o
+      - name: Compile BK4819 driver with V2 bus selected
+        run: |
+          arm-none-eabi-gcc \\
+            -mcpu=cortex-m0 -mthumb \\
+            -std=c2x -Os -fno-builtin -fshort-enums \\
+            -DTARGET_UVK5_V2 -DENABLE_MDC1200 -DENABLE_FLEETSYNC \\
+            -I. -Idriver -Ibsp/py32f030 \\
+            -c driver/bk4819.c -o /tmp/bk4819_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
