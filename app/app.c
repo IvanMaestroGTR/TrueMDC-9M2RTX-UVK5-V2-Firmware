@@ -97,7 +97,7 @@
 #ifdef TARGET_UVK5_V2
 #define APP_PTT_IS_RELEASED() ((GPIO_V2_Read(GPIOA) & (1U << 3)) != 0U)
 #else
-#define APP_PTT_IS_RELEASED() APP_PTT_IS_RELEASED()
+#define APP_PTT_IS_RELEASED() GPIO_CheckBit(&GPIOC->DATA, GPIOC_PIN_PTT)
 #endif
 
 static bool gRxEndTonePending;
