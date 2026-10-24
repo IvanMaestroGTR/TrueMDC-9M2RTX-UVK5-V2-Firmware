@@ -231,8 +231,16 @@ KEY_Code_t KEYBOARD_Poll(void) {
 
 KEY_Code_t GetKey() {
     KEY_Code_t btn = KEYBOARD_Poll();
+#ifdef TARGET_UVK5_V2
+    if (btn == KEY_INVALID && (GPIO_V2_Read(GPIOA) & (1U << 3)) == 0U) {
+        btn = KEY_PTT;
+    }
+#else
     if (btn == KEY_INVALID && !GPIO_CheckBit(&GPIOC->DATA, GPIOC_PIN_PTT)) {
         btn = KEY_PTT;
     }
+#endif
+    return btn;
+}
     return btn;
 }
