@@ -41,6 +41,14 @@
 
 #include "misc.h"
 
+#ifdef TARGET_UVK5_V2
+#define BK4819_AUDIO_PATH_ENABLE()  BK4819_TARGET_AudioPathEnable()
+#define BK4819_AUDIO_PATH_DISABLE() BK4819_TARGET_AudioPathDisable()
+#else
+#define BK4819_AUDIO_PATH_ENABLE()  GPIO_SetBit(&GPIOC->DATA, 4)
+#define BK4819_AUDIO_PATH_DISABLE() GPIO_ClearBit(&GPIOC->DATA, 4)
+#endif
+
 #ifndef ARRAY_SIZE
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(x[0]))
 #endif
@@ -1295,7 +1303,7 @@ void BK4819_PlayTalkPermitToneTx(uint8_t mode, bool delay_speaker_open) {
     }
 
     SYSTEM_DelayMs(1);
-    GPIO_ClearBit(&GPIOC->DATA, 4);
+    BK4819_AUDIO_PATH_DISABLE();
     SYSTEM_DelayMs(1);
     BK4819_EnterTxMute();
     if (delay_speaker_open)
@@ -1304,7 +1312,7 @@ void BK4819_PlayTalkPermitToneTx(uint8_t mode, bool delay_speaker_open) {
         AUDIO_AudioPathOn();
     BK4819_SetAF(2);
     BK4819_EnableTXLink();
-    GPIO_SetBit(&GPIOC->DATA, 4);
+    BK4819_AUDIO_PATH_ENABLE();
     SYSTEM_DelayMs(1);
 
     for (unsigned int i = 0; i < count; i++) {
@@ -1326,7 +1334,7 @@ void BK4819_PlayTalkPermitToneTx(uint8_t mode, bool delay_speaker_open) {
     }
 
     SYSTEM_DelayMs(1);
-    GPIO_ClearBit(&GPIOC->DATA, 4);
+    BK4819_AUDIO_PATH_DISABLE();
     SYSTEM_DelayMs(1);
     BK4819_SetAF(BK4819_AF_MUTE);
     BK4819_TxOn_Beep();
@@ -2250,7 +2258,7 @@ void BK4819_start_tone(const uint16_t frequency, const unsigned int level, const
 {
     SYSTEM_DelayMs(1);
 
-    GPIO_ClearBit(&GPIOC->DATA, 4);
+    BK4819_AUDIO_PATH_DISABLE();
 
     SYSTEM_DelayMs(1);
 
@@ -2303,7 +2311,7 @@ void BK4819_start_tone(const uint16_t frequency, const unsigned int level, const
     if (!tx_mute)
         BK4819_WriteRegister(0x50, 0x3B20);   // 0011 1011 0010 0000
 
-    GPIO_SetBit(&GPIOC->DATA, 4);
+    BK4819_AUDIO_PATH_ENABLE();
 
     SYSTEM_DelayMs(1);
 }
@@ -2312,7 +2320,7 @@ void BK4819_stop_tones(const bool tx)
 {
     SYSTEM_DelayMs(1);
 
-    GPIO_ClearBit(&GPIOC->DATA, 4);
+    BK4819_AUDIO_PATH_DISABLE();
 
     SYSTEM_DelayMs(1);
 
