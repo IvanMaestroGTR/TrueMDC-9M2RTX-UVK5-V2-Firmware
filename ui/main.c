@@ -611,7 +611,11 @@ void UI_DisplayMain(void) {
 #ifdef ENABLE_NOAA
         else
         {
+#ifdef ENABLE_FMRADIO
             if (!gFmRadioMode && (gInputBoxIndex == 0 || gEeprom.TX_VFO != vfo_num))
+#else
+            if (gInputBoxIndex == 0 || gEeprom.TX_VFO != vfo_num)
+#endif
             {	// channel number
                 sprintf(String, "N%u", 1 + gEeprom.ScreenChannel[vfo_num] - NOAA_CHANNEL_FIRST);
             }
