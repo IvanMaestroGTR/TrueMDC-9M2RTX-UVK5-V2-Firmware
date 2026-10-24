@@ -17,10 +17,14 @@
 #include <stdint.h>
 #include <stdio.h>     // NULL
 
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
 #include "bsp/dp32g030/spi.h"
 #include "driver/gpio.h"
 #include "driver/spi.h"
+#else
+#include "driver/gpio_v2.h"
+#endif
 #include "driver/st7565.h"
 #ifndef TARGET_UVK5_V2
 #include "driver/system.h"
@@ -196,7 +200,7 @@ void ST7565_Init(void) {
 
     ST7565_WriteByte(ST7565_CMD_SET_START_LINE | 0);   // line 0
     ST7565_WriteByte(ST7565_CMD_DISPLAY_ON_OFF | 1);   // D=1
-    SPI_WaitForUndocumentedTxFifoStatusBit();
+    LCD_TX_WAIT();
     LCD_SPI_END();
 
     ST7565_FillScreen(0x00);
@@ -206,7 +210,7 @@ void ST7565_FixInterfGlitch(void) {
     LCD_SPI_BEGIN();
     for (uint8_t i = 0; i < ARRAY_SIZE(cmds); i++)
         ST7565_WriteByte(cmds[i]);
-    SPI_WaitForUndocumentedTxFifoStatusBit();
+    LCD_TX_WAIT();
     LCD_SPI_END();
 }
 
@@ -224,7 +228,7 @@ void ST7565_SelectColumnAndLine(uint8_t Column, uint8_t Line) {
     LCD_TX_BYTE(Line + 176);
     LCD_TX_BYTE(((Column >> 4) & 0x0F) | 0x10);
     LCD_TX_BYTE((Column >> 0) & 0x0F);
-    SPI_WaitForUndocumentedTxFifoStatusBit();
+    LCD_TX_WAIT();
 }
 
 void ST7565_WriteByte(uint8_t Value) {
