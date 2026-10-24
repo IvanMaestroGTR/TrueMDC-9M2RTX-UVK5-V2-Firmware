@@ -26,7 +26,9 @@
 #include "settings.h"
 
 #include "driver/backlight.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "driver/gpio.h"
 
 #define DECREMENT(cnt) \
