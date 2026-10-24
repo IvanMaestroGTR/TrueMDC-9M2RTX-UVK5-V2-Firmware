@@ -142,3 +142,14 @@ jobs:
       - name: Attempt full V2 application build and link
         run: |
           make build TARGET_UVK5_V2=1 ENABLE_MDC1200=1 ENABLE_MDC1200_EDIT=1 ENABLE_MDC1200_CONTACT=1
+
+      - name: Publish V2 build outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: TrueMDC-UVK5-V2-PY32F030
+          if-no-files-found: error
+          retention-days: 30
+          path: |
+            firmware
+            firmware.bin
+            archive/TrueMDC.Gen00.packed.bin
