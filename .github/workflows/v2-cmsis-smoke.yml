@@ -35,9 +35,9 @@ jobs:
       - name: Compile PY32F030 GPIO primitives
         run: |
           arm-none-eabi-gcc \
-            -mcpu=cortex-m0plus -mthumb \\
-            -std=c11 -Wall -Wextra -Werror -ffreestanding \\
-            -Ibsp/py32f030 -Idriver \\
+            -mcpu=cortex-m0plus -mthumb \
+            -std=c11 -Wall -Wextra -Werror -ffreestanding \
+            -Ibsp/py32f030 -Idriver \
             -c driver/gpio_v2.c -o /tmp/gpio_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
