@@ -53,10 +53,14 @@
 #include "app/uart.h"
 #endif
 
+#ifndef TARGET_UVK5_V2
 #include "ARMCM0.h"
+#endif
 #include "audio.h"
 #include "board.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "driver/backlight.h"
 
 #ifdef ENABLE_FMRADIO
@@ -64,7 +68,9 @@
 #endif
 
 #include "driver/bk4819.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
+#endif
 #include "driver/keyboard.h"
 #include "driver/st7565.h"
 #include "driver/system.h"
