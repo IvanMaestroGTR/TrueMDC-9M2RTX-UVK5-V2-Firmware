@@ -231,6 +231,10 @@ uint16_t BK4819_ReadRegister(BK4819_REGISTER_t Register) {
 }
 
 void BK4819_WriteRegister(BK4819_REGISTER_t Register, uint16_t Data) {
+#ifdef TARGET_UVK5_V2
+    BK4819_TARGET_WriteRegister((uint8_t)Register, Data);
+#else
+
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCN);
     GPIO_ClearBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
 
@@ -251,6 +255,7 @@ void BK4819_WriteRegister(BK4819_REGISTER_t Register, uint16_t Data) {
 
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SCL);
     GPIO_SetBit(&GPIOC->DATA, GPIOC_PIN_BK4819_SDA);
+#endif
 }
 
 void BK4819_WriteU8(uint8_t Data) {
