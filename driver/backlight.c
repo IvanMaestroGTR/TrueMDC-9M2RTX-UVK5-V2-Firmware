@@ -60,8 +60,7 @@ void BACKLIGHT_InitHardware() {
     RCC->APBRSTR2 &= ~RCC_APBRSTR2_TIM1RST;
     (void)GPIO_V2_Configure(GPIOA, (uint16_t)(1U << 8),
         GPIO_V2_MODE_ALTERNATE, GPIO_V2_PULL_NONE, 3U, 0U);
-    GPIOA->AFRH = (GPIOA->AFRH & ~GPIO_AFRH_AFSEL8_Msk) |
-                  (2UL << GPIO_AFRH_AFSEL8_Pos);
+    GPIOA->AFR[1] = (GPIOA->AFR[1] & ~(0xFUL << 0)) | (2UL << 0);
     TIM1->CR1 = 0U;
     TIM1->PSC = (SystemCoreClock / 100000U) - 1U;
     TIM1->ARR = 99U; /* 1 kHz PWM at a 100 kHz timer tick. */
