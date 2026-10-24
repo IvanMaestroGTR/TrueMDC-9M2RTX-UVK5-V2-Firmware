@@ -794,12 +794,13 @@ void MENU_AcceptSetting(void) {
             //     return;
 #endif
 #ifdef ENABLE_MDC1200
-        case MENU_MDC_PREAMBLE_DURATION:
+        case MENU_MDC_PREAMBLE_DURATION: {
             // Menu index to preamble value mapping (skip 1 and 9)
             // Index 0->0, 1->2, 2->3, 3->4, 4->5, 5->6, 6->7, 7->8
-            uint8_t map_index[] = {0, 2, 3, 4, 5, 6, 7, 8};
+            const uint8_t map_index[] = {0, 2, 3, 4, 5, 6, 7, 8};
             gEeprom.MDC1200_PREAMBLE_DURATION = (gSubMenuSelection < 8) ? map_index[gSubMenuSelection] : 0;
             break;
+        }
 
         case MENU_MDC_PREAMBLE_WHEN:
             gEeprom.MDC1200_PREAMBLE_WHEN = gSubMenuSelection;
