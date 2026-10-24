@@ -31,9 +31,10 @@ docker run --rm \
             ENABLE_MDC1200_EDIT=1 \
             ENABLE_MDC1200_CONTACT=1 \
             ENABLE_FLEETSYNC=1 \
-            ENABLE_FMRADIO=0 \
-            ENABLE_SPECTRUM=0 && \
+            ENABLE_FMRADIO=1 \
+            ENABLE_SPECTRUM=1 && \
         cp firmware.bin compiled-firmware/TrueMDC.UVK5V2.Gen${VERSION}.bin && \
+        cp firmware compiled-firmware/TrueMDC.UVK5V2.Gen${VERSION}.elf.bin && \
         cp archive/TrueMDC.Gen${VERSION}.packed.bin compiled-firmware/"
 
 echo
