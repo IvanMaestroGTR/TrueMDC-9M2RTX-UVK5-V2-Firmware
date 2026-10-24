@@ -102,6 +102,5 @@ void BK4819_V2_WriteRegister(uint8_t reg, uint16_t data)
     delay_edge();
     GPIO_V2_Set(GPIOB, SCN);
     delay_edge();
-    delay_edge();
     GPIO_V2_Set(GPIOB, SCL | SDA);
 }
