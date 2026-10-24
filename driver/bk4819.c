@@ -31,7 +31,9 @@
 #ifndef TARGET_UVK5_V2
 #include "gpio.h"
 #endif
+#if !defined(TARGET_UVK5_V2)
 #include "system.h"
+#endif
 #include "systick.h"
 
 #ifdef ENABLE_MDC1200
