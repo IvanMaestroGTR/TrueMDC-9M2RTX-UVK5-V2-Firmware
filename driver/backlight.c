@@ -15,10 +15,14 @@
  */
 
 #include "backlight.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
 #include "bsp/dp32g030/pwmplus.h"
 #include "bsp/dp32g030/portcon.h"
 #include "driver/gpio.h"
+#else
+#include "driver/gpio_v2.h"
+#endif
 #include "settings.h"
 
 // this is decremented once every 500ms
