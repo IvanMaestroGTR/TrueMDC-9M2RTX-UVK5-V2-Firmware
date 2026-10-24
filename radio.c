@@ -26,7 +26,9 @@
 #endif
 
 #include "audio.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 #include "dcs.h"
 #include "driver/bk4819.h"
 #include "driver/eeprom.h"
