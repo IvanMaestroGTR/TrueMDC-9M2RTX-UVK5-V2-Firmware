@@ -202,3 +202,10 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Ported basic V2 backlight on/off behavior in `driver/backlight.c` to PA8. The original DP32 PWM path remains untouched for V1. V2 brightness currently behaves as on/off only; proper PWM dimming is still pending.
 - CI now attempts to compile the V2 display and backlight translation units as well as the previously adapted application, keypad, and voice files.
 - EEPROM/I²C and ADC/battery hardware access still require dedicated V2 implementations. The current V2 board reference does not justify reusing the DP32 peripheral register code.
+
+
+## EEPROM I²C transport port (2026-10-24)
+
+- Added a target-specific bit-banged I²C implementation in `driver/i2c.c` using the V2 reference pins SCL PA5 and SDA PA6. SDA direction changes use the V2 GPIO mode API; the V1 DP32 open-drain/input register path remains in its original branch.
+- This I²C bus shares PA5/PA6 with keypad matrix activity in the V2 reference design, so the scanner restores those lines high after scanning. Hardware validation is still needed to verify EEPROM ACK timing and the shared-line behavior on the actual radio.
+- CI now includes a standalone V2 compile step for the I²C driver. This is a source-compile check, not proof of EEPROM read/write operation on hardware.
