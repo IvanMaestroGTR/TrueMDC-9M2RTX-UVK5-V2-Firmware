@@ -92,3 +92,22 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - The V2 smoke workflow now compiles this driver and includes it in the minimal
   link. This driver is not yet selected by the default Makefile; V1 remains
   unchanged. The CI result for this latest addition is pending.
+
+
+## Verified runtime and GPIO follow-up (2026-10-24)
+
+- GitHub Actions run `40091262405` passed for commit
+  `90dfc2609f1ad201d438306a4c965b80bded5a03`: the PY32F030 system
+  initialization, SysTick driver, reset/vector assembly, and minimal link all
+  completed successfully with compiler warnings treated as errors. The
+  independent V1 `build` job also passed on that commit.
+- Added `driver/gpio_v2.c` and `driver/gpio_v2.h` as an isolated CMSIS
+  register-level GPIO foundation. It supports GPIOA, GPIOB and GPIOF clock
+  enabling, input/output/alternate/analog mode, pull configuration, output
+  speed/type, and pin set/clear/read.
+- The new GPIO API deliberately contains no radio-board pin assignments.
+  Those must be copied from verified V2 reference wiring; V1 DP32 pin/register
+  assumptions are not safe to reuse.
+- The V2 smoke workflow was expanded to compile and link the GPIO object.
+  The result for the expanded workflow is pending; this does not yet validate
+  the full app, RF signalling, display, keyboard, or EEPROM path.
