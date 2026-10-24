@@ -72,6 +72,12 @@ jobs:
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/backlight.c -o /tmp/backlight_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/i2c.c -o /tmp/i2c_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c driver/eeprom.c -o /tmp/eeprom_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c radio.c -o /tmp/radio_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c functions.c -o /tmp/functions_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c settings.c -o /tmp/settings_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c helper/battery.c -o /tmp/battery_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/mdc1200.c -o /tmp/mdc1200_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/fleetsync.c -o /tmp/fleetsync_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
