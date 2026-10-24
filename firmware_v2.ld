@@ -8,7 +8,7 @@
  * Core/py32f030x8.ld. See V2_HARDWARE_INVENTORY.md.
  */
 
-ENTRY(HandlerReset)
+ENTRY(Reset_Handler)
 
 _estack = 0x20002000;       /* end of 8 KiB RAM */
 _Min_Heap_Size = 0;
