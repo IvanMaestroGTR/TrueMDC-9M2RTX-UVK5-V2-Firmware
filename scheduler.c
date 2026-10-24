@@ -31,7 +31,9 @@
 #include "bsp/dp32g030/gpio.h"
 #endif
 #endif
+#ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
+#endif
 
 #define DECREMENT(cnt) \
 	do {               \
