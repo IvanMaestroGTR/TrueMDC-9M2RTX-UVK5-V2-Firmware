@@ -28,7 +28,9 @@
 #ifdef TARGET_UVK5_V2
 #include "bk4819_v2_adapter.h"
 #endif
+#ifndef TARGET_UVK5_V2
 #include "gpio.h"
+#endif
 #include "system.h"
 #include "systick.h"
 
