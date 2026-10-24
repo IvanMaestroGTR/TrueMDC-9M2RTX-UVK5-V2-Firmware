@@ -50,7 +50,7 @@ void BOARD_V2_ADC_Init(void)
     RCC->APBRSTR2 &= ~RCC_APBRSTR2_ADCRST;
     ADC1->CR = 0U;
     ADC1->CFGR1 = 0U; /* 12-bit, right aligned, software-triggered, single shot. */
-    ADC1->CFGR2 = 0U;
+    ADC1->CFGR2 = ADC_CFGR2_CKMODE_1; /* Synchronous PCLK / 4, as in the V2 reference. */
     ADC1->SMPR = ADC_SMPR_SMP_Msk; /* Longest sample time for the board's sense network. */
     ADC1->ISR = ADC_ISR_EOC | ADC_ISR_EOSEQ | ADC_ISR_EOSMP;
 
