@@ -15,8 +15,12 @@
  *     limitations under the License.
  */
 
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
 #include "driver/gpio.h"
+#else
+#include "driver/gpio_v2.h"
+#endif
 #include "driver/keyboard.h"
 #include "driver/systick.h"
 #include "driver/i2c.h"
@@ -31,6 +35,7 @@ KEY_Code_t gSimulateKey     = KEY_INVALID;
     KEY_Code_t gSimulateHold     = KEY_INVALID;
     uint8_t gDebounceDefeat = 0;
 #endif
+#ifndef TARGET_UVK5_V2
 static const struct {
 
     // Using a 16 bit pre-calculated shift and invert is cheaper
@@ -95,6 +100,8 @@ static const struct {
                 }
         }
 };
+
+#endif
 
 KEY_Code_t KEYBOARD_Poll(void) {
 #ifdef TARGET_UVK5_V2
