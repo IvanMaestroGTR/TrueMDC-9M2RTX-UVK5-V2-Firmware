@@ -48,7 +48,7 @@ jobs:
             -Wl,-Map=/tmp/v2-runtime-smoke.map \
             -T firmware_v2.ld \
             /tmp/start_v2.o /tmp/system_v2.o /tmp/v2_smoke_stubs.o \
-            -o /tmp/v2-runtime-smoke.elf
+            -lgcc -o /tmp/v2-runtime-smoke.elf
           arm-none-eabi-size /tmp/v2-runtime-smoke.elf
           arm-none-eabi-readelf -h /tmp/v2-runtime-smoke.elf
           arm-none-eabi-nm /tmp/v2-runtime-smoke.elf | grep -E 'Reset_Handler|g_pfnVectors|SystemInit|Main'
