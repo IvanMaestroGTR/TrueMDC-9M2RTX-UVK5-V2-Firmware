@@ -1,5 +1,31 @@
 # V2 startup/runtime migration status
 
+## Current status — 2026-10-25
+
+The dedicated `TARGET_UVK5_V2=1` target now completes a full application compile,
+link, binary conversion, and pack step in GitHub Actions. Latest verified commit:
+`725219a863774cac8b5e2e4de5eccc22f6dffb7d`.
+
+- Full application build passed with MDC1200, MDC ID editing, and MDC contacts enabled.
+- Reported ELF section sizes: 48,676 bytes text, 20 bytes data, 3,112 bytes BSS.
+- Raw `firmware.bin` size: 48,696 bytes, with initial stack pointer `0x20002000`
+  and reset vector `0x0800bd49`. CI checks these values fall within the V2
+  application flash/RAM layout.
+- The V2 workflow publishes `firmware` (ELF), `firmware.bin` (raw binary),
+  and `archive/TrueMDC.Gen00.packed.bin` as the
+  [TrueMDC-UVK5-V2-PY32F030 artifact](https://github.com/IvanMaestroGTR/TrueMDC-9M2RTX-Losehu-UVK5-Firmware/actions/runs/40111676438).
+- The normal V1 build remains a separate workflow and passed on the preceding
+  verified build commit. V1-specific source paths remain target-guarded.
+
+**Important:** passing CI proves the image builds and its basic vector/layout
+checks pass; it does not prove the image is safe or functional on a physical
+radio. No physical V2 radio test has been performed. Battery ADC sampling and
+battery indication are intentionally bypassed until PY32 ADC support is ported.
+V2 backlight currently supports on/off only, not true brightness PWM. EEPROM
+I²C, LCD, keypad, and BK4819 transactions are compiled but still need hardware
+validation. Do not treat this as a production-tested firmware release.
+
+
 This file tracks the separate UV-K5 V2 startup path. The V1 startup and linker
 remain unchanged.
 
