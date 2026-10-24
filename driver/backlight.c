@@ -36,36 +36,41 @@ static uint8_t currentBrightness;
 static void BACKLIGHT_ApplyBrightness(uint8_t brightness) {
     currentBrightness = brightness;
     backlightOn = brightness > 0;
+#ifdef TARGET_UVK5_V2
+    /* V2 backlight is GPIOA8; hardware PWM dimming is not yet ported. */
+    if (brightness > 0U)
+        GPIO_V2_Set(GPIOA, (uint16_t)(1U << 8));
+    else
+        GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 8));
+#else
     if (brightness >= 10u) {
         PWM_PLUS0_CH0_COMP = PWM_PLUS0_PERIOD;
     } else {
         PWM_PLUS0_CH0_COMP = (uint16_t)((uint32_t)brightness * PWM_PLUS0_PERIOD / 10u);
     }
+#endif
 }
 
 void BACKLIGHT_InitHardware() {
+#ifdef TARGET_UVK5_V2
+    (void)GPIO_V2_Configure(GPIOA, (uint16_t)(1U << 8),
+        GPIO_V2_MODE_OUTPUT, GPIO_V2_PULL_UP, 3U, 0U);
+    GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 8));
+#else
     // 48MHz / 94 / 1024 ~ 500Hz
     const uint32_t PWM_FREQUENCY_HZ = 25000;
     PWM_PLUS0_CLKSRC |= ((48000000 / 1024 / PWM_FREQUENCY_HZ) << 16);
     PWM_PLUS0_PERIOD = 1023;
 
     PORTCON_PORTB_SEL0 &= ~(0
-                            // Back light
-                            | PORTCON_PORTB_SEL0_B6_MASK
-    );
-    PORTCON_PORTB_SEL0 |= 0
-                          // Back light PWM
-                          | PORTCON_PORTB_SEL0_B6_BITS_PWMP0_CH0;
+                            | PORTCON_PORTB_SEL0_B6_MASK);
+    PORTCON_PORTB_SEL0 |= PORTCON_PORTB_SEL0_B6_BITS_PWMP0_CH0;
 
-    PWM_PLUS0_GEN =
-            PWMPLUS_GEN_CH0_OE_BITS_ENABLE |
-            PWMPLUS_GEN_CH0_OUTINV_BITS_ENABLE |
-            0;
-
-    PWM_PLUS0_CFG =
-            PWMPLUS_CFG_CNT_REP_BITS_ENABLE |
-            PWMPLUS_CFG_COUNTER_EN_BITS_ENABLE |
-            0;
+    PWM_PLUS0_GEN = PWMPLUS_GEN_CH0_OE_BITS_ENABLE |
+                    PWMPLUS_GEN_CH0_OUTINV_BITS_ENABLE;
+    PWM_PLUS0_CFG = PWMPLUS_CFG_CNT_REP_BITS_ENABLE |
+                    PWMPLUS_CFG_COUNTER_EN_BITS_ENABLE;
+#endif
 }
 unsigned short BACKLIGHT_MAP[7]={11,21,41,121,241,481,0};
 
