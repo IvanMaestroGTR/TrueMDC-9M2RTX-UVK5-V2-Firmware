@@ -173,6 +173,9 @@ endif
 ifeq ($(TARGET_UVK5_V2),1)
     OBJS += driver/backlight.o
     OBJS += driver/bk4819.o
+    ifeq ($(ENABLE_MDC1200),1)
+        OBJS += driver/crc.o
+    endif
     OBJS += driver/eeprom.o
     OBJS += driver/i2c.o
     OBJS += driver/keyboard.o
