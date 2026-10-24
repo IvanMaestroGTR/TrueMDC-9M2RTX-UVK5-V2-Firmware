@@ -67,3 +67,15 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
   DP32-coupled application drivers and does not produce a flashable TrueMDC V2
   image. Next milestone is a PY32 board/peripheral layer and a real V2-linked
   application, not simply enabling the V2 startup in the normal build.
+
+
+## Clock initialization follow-up (2026-10-24)
+
+- Expanded `SystemInit()` to perform the PY32F030-specific early clock setup
+  before `Main()`: enable SYSCFG/PWR peripheral clocks, select calibrated
+  24 MHz HSI, wait for oscillator-ready status, select undivided AHB/APB clocks,
+  set zero flash wait states, set `SystemCoreClock`, and relocate VTOR to the
+  application base. This follows the sequence in the F4HWN V2 reference's
+  `Core/Src/main.c` without depending on its HAL/LL layer.
+- This change is awaiting its own CI compile/link result. The earlier passing
+  smoke run predates this expanded clock sequence.
