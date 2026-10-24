@@ -79,3 +79,16 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
   `Core/Src/main.c` without depending on its HAL/LL layer.
 - This change is awaiting its own CI compile/link result. The earlier passing
   smoke run predates this expanded clock sequence.
+
+
+## SysTick driver port (2026-10-24)
+
+- Added `driver/systick_v2.c`, retaining the legacy `SYSTICK_Init`,
+  `SYSTICK_DelayUs`, and `SYSTICK_Delay250ns` API while deriving the tick
+  period and microsecond scale from `SystemCoreClock` (24 MHz on V2), rather
+  than the V1 driver's hard-coded 48 MHz values.
+- Delay polling now accounts for SysTick reloads correctly when a delay spans
+  the 10 ms counter period.
+- The V2 smoke workflow now compiles this driver and includes it in the minimal
+  link. This driver is not yet selected by the default Makefile; V1 remains
+  unchanged. The CI result for this latest addition is pending.
