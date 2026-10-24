@@ -117,7 +117,7 @@ void _putchar(__attribute__((unused)) char c) {
 
 
 #ifdef TARGET_UVK5_V2
-#define MAIN_RESET_VOICE_PINS() GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 12))
+#define MAIN_RESET_VOICE_PINS() do { GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 7)); GPIO_V2_Set(GPIOB, (uint16_t)(1U << 0)); } while (0)
 #else
 #define MAIN_RESET_VOICE_PINS() GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0)
 #endif
