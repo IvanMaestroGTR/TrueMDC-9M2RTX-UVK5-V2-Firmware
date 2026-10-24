@@ -138,3 +138,7 @@ jobs:
           arm-none-eabi-size /tmp/v2-runtime-smoke.elf
           arm-none-eabi-readelf -h /tmp/v2-runtime-smoke.elf
           arm-none-eabi-nm /tmp/v2-runtime-smoke.elf | grep -E 'Reset_Handler|g_pfnVectors|SystemInit|Main|BK4819_V2_(BusInit|ReadRegister|WriteRegister)|BOARD_V2_GPIO_Init|SYSTICK_Init'
+
+      - name: Attempt full V2 application build and link
+        run: |
+          make build TARGET_UVK5_V2=1 ENABLE_MDC1200=1 ENABLE_MDC1200_EDIT=1 ENABLE_MDC1200_CONTACT=1
