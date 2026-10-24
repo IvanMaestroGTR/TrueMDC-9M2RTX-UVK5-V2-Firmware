@@ -1,4 +1,4 @@
-name: V2 PY32 CMSIS smoke test
+name: V2 PY32 runtime smoke test
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  compile-system-init:
+  compile-v2-runtime:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
@@ -18,11 +18,37 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-arm-none-eabi
-      - name: Compile isolated PY32F030 system initialization
+      - name: Compile PY32F030 system initialization
         run: |
           arm-none-eabi-gcc \
             -mcpu=cortex-m0plus -mthumb \
             -std=c11 -Wall -Wextra -Werror -ffreestanding \
             -Ibsp/py32f030 \
             -c driver/system_v2.c -o /tmp/system_v2.o
-          arm-none-eabi-size /tmp/system_v2.o
+      - name: Assemble V2 reset and interrupt vector table
+        run: |
+          arm-none-eabi-gcc \
+            -mcpu=cortex-m0plus -mthumb \
+            -c start_v2.S -o /tmp/start_v2.o
+      - name: Link startup, linker script, and system init together
+        run: |
+          cat > /tmp/v2_smoke_stubs.c <<'EOF'
+          #include <stdint.h>
+          void DATA_Init(void) {}
+          void BSS_Init(void) {}
+          void Main(void) { for (;;) {} }
+          EOF
+          arm-none-eabi-gcc \
+            -mcpu=cortex-m0plus -mthumb \
+            -std=c11 -ffreestanding -fno-builtin \
+            -c /tmp/v2_smoke_stubs.c -o /tmp/v2_smoke_stubs.o
+          arm-none-eabi-gcc \
+            -mcpu=cortex-m0plus -mthumb -nostdlib \
+            -Wl,--build-id=none -Wl,--gc-sections \
+            -Wl,-Map=/tmp/v2-runtime-smoke.map \
+            -T firmware_v2.ld \
+            /tmp/start_v2.o /tmp/system_v2.o /tmp/v2_smoke_stubs.o \
+            -o /tmp/v2-runtime-smoke.elf
+          arm-none-eabi-size /tmp/v2-runtime-smoke.elf
+          arm-none-eabi-readelf -h /tmp/v2-runtime-smoke.elf
+          arm-none-eabi-nm /tmp/v2-runtime-smoke.elf | grep -E 'Reset_Handler|g_pfnVectors|SystemInit|Main'
