@@ -61,7 +61,7 @@ jobs:
             -Wl,--build-id=none -Wl,--gc-sections \
             -Wl,-Map=/tmp/v2-runtime-smoke.map \
             -T firmware_v2.ld \
-            /tmp/start_v2.o /tmp/system_v2.o /tmp/systick_v2.o /tmp/v2_smoke_stubs.o \
+            /tmp/start_v2.o /tmp/system_v2.o /tmp/systick_v2.o /tmp/gpio_v2.o /tmp/v2_smoke_stubs.o \
             -lgcc -o /tmp/v2-runtime-smoke.elf
           arm-none-eabi-size /tmp/v2-runtime-smoke.elf
           arm-none-eabi-readelf -h /tmp/v2-runtime-smoke.elf
