@@ -85,9 +85,9 @@ void SystemCoreClockUpdate(void)
 
 void SystemInit(void)
 {
-    /* Restore the calibrated 8 MHz HSI setting used by the vendor runtime. */
+    /* Match the F4HWN V2 reference clock setup: calibrated 24 MHz HSI. */
     RCC->ICSCR = (RCC->ICSCR & 0xFFFF0000U) |
-                 (1U << 13) |
+                 (4U << RCC_ICSCR_HSI_FS_Pos) |
                  ((*(const uint32_t *)0x1FFF0F04U) & 0x1FFFU);
 
 #ifdef VECT_TAB_SRAM
