@@ -153,7 +153,9 @@ KEY_Code_t KEYBOARD_Poll(void) {
             break;
     }
 
-    /* Restore the shared voice/keypad lines to their idle states. */
+    /* The V2 keypad shares PA5/PA6 with EEPROM I2C; restore the bus. */
+    I2C_Stop();
+    /* Restore voice data/strobe pins to their idle states. */
     GPIO_V2_Clear(GPIOA, colA[2]);
     GPIO_V2_Set(GPIOB, colB0);
     return Key;
