@@ -78,6 +78,12 @@ jobs:
           arm-none-eabi-gcc $COMMON_FLAGS -c helper/battery.c -o /tmp/battery_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c app/mdc1200.c -o /tmp/mdc1200_v2.o
           arm-none-eabi-gcc $COMMON_FLAGS -c app/fleetsync.c -o /tmp/fleetsync_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/main.c -o /tmp/app_main_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/action.c -o /tmp/action_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c app/menu.c -o /tmp/menu_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/ui.c -o /tmp/ui_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/main.c -o /tmp/ui_main_v2.o
+          arm-none-eabi-gcc $COMMON_FLAGS -c ui/welcome.c -o /tmp/welcome_v2.o
       - name: Assemble V2 reset and interrupt vector table
         run: |
           arm-none-eabi-gcc \
