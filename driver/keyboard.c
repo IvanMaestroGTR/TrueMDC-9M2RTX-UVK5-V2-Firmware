@@ -151,8 +151,6 @@ KEY_Code_t KEYBOARD_Poll(void) {
     GPIO_V2_Set(GPIOB, colB0);
     return Key;
 #else
-KEY_Code_t KEYBOARD_Poll(void) {\n
-
 #ifdef ENABLE_DOCK
     if(gSimulateKey != KEY_INVALID)
         {
@@ -219,7 +217,6 @@ KEY_Code_t KEYBOARD_Poll(void) {\n
     GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_KEYBOARD_7);
 
     return Key;
-}
 #endif
 }
 
