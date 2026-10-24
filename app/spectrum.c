@@ -37,6 +37,9 @@
 #endif
 
 #include "driver/eeprom.h"
+#ifdef TARGET_UVK5_V2
+#include "driver/board_v2.h"
+#endif
 
 #include "driver/backlight.h"
 #include "frequencies.h"
@@ -813,8 +816,13 @@ static void DrawSpectrum() {
 }
 
   void DrawPower() {
+#ifdef TARGET_UVK5_V2
+    BOARD_V2_ADC_GetBatteryInfo(&gBatteryVoltages[gBatteryCheckCounter++ % 4],
+                                &gBatteryCurrent);
+#else
     BOARD_ADC_GetBatteryInfo(&gBatteryVoltages[gBatteryCheckCounter++ % 4],
                              &gBatteryCurrent);
+#endif
 
     uint16_t voltage = (gBatteryVoltages[0] + gBatteryVoltages[1] +
                         gBatteryVoltages[2] + gBatteryVoltages[3]) /
