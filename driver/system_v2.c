@@ -8,8 +8,8 @@
  * Licensed under the BSD 3-Clause License. See the vendor source and license
  * notices in the reference repository before redistribution.
  *
- * This file is not selected by the V1 build. It requires the PY32F030 CMSIS
- * device headers to be added to this port before it can compile.
+ * This file is not selected by the V1 build. PY32F030 CMSIS device headers
+ * are vendored under bsp/py32f030/ for the isolated V2 runtime.
  */
 #include "../bsp/py32f030/device.h"
 
@@ -29,7 +29,8 @@
 /* The application image begins at 0x08001000 in the V2 layout. */
 #define VECT_TAB_OFFSET 0x1000U
 
-uint32_t SystemCoreClock = HSI_VALUE;
+/* SystemInit selects the 24 MHz HSI frequency field below. */
+uint32_t SystemCoreClock = 24000000U;
 
 const uint32_t AHBPrescTable[16] = {
     0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9
