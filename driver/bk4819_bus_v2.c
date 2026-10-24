@@ -9,8 +9,8 @@
 
 static void delay_edge(void)
 {
-    /* Match the V2 reference BK4819 bit-bang timing (1 us per edge). */
-    SYSTICK_DelayUs(1U);
+    /* muzkr's V2 BK4819 driver uses 250 ns edge delays on this bus. */
+    SYSTICK_Delay250ns(1U);
 }
 
 void BK4819_V2_BusInit(void)
