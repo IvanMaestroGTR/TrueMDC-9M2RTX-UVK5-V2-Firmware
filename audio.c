@@ -19,20 +19,38 @@
 #endif
 
 #include "audio.h"
+#ifndef TARGET_UVK5_V2
 #include "bsp/dp32g030/gpio.h"
+#endif
 
 #ifdef ENABLE_FMRADIO
 #include "driver/bk1080.h"
 #endif
 
 #include "driver/bk4819.h"
+#ifndef TARGET_UVK5_V2
 #include "driver/gpio.h"
 #include "driver/system.h"
+#else
+#include "driver/gpio_v2.h"
+#endif
 #include "driver/systick.h"
 #include "functions.h"
 #include "misc.h"
 #include "settings.h"
 #include "ui/ui.h"
+
+#ifdef TARGET_UVK5_V2
+#define AUDIO_VOICE0_SET()   GPIO_V2_Set(GPIOA, (uint16_t)(1U << 7))
+#define AUDIO_VOICE0_CLEAR() GPIO_V2_Clear(GPIOA, (uint16_t)(1U << 7))
+#define AUDIO_VOICE1_SET()   GPIO_V2_Set(GPIOB, (uint16_t)(1U << 0))
+#define AUDIO_VOICE1_CLEAR() GPIO_V2_Clear(GPIOB, (uint16_t)(1U << 0))
+#else
+#define AUDIO_VOICE0_SET()   GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0)
+#define AUDIO_VOICE0_CLEAR() GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0)
+#define AUDIO_VOICE1_SET()   GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_VOICE_1)
+#define AUDIO_VOICE1_CLEAR() GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_1)
+#endif
 
 
 BEEP_Type_t gBeepToPlay = BEEP_NONE;
@@ -297,21 +315,21 @@ static void AUDIO_PlayVoice(uint8_t VoiceID)
 {
     unsigned int i;
 
-    GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0);
+    AUDIO_VOICE0_SET();
     SYSTEM_DelayMs(20);
-    GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0);
+    AUDIO_VOICE0_CLEAR();
 
     for (i = 0; i < 8; i++)
     {
         if ((VoiceID & 0x80U) == 0)
-            GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_1);
+            AUDIO_VOICE1_CLEAR();
         else
-            GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_VOICE_1);
+            AUDIO_VOICE1_SET();
 
         SYSTICK_DelayUs(1000);
-        GPIO_SetBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0);
+        AUDIO_VOICE0_SET();
         SYSTICK_DelayUs(1200);
-        GPIO_ClearBit(&GPIOA->DATA, GPIOA_PIN_VOICE_0);
+        AUDIO_VOICE0_CLEAR();
         VoiceID <<= 1;
         SYSTICK_DelayUs(200);
     }
