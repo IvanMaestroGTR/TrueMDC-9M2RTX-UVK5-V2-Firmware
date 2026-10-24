@@ -250,3 +250,9 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 
 
 - The expanded compile sweep reached the shared menu module and found an existing MDC preamble menu `case` with a declaration directly after its label. Wrapped that case in a block and made the lookup table `const`; this is a small source correctness fix discovered by enabling MDC in the V2 compile flags.
+
+
+## Dedicated V2 build target (2026-10-24)
+
+- Added `TARGET_UVK5_V2=1` selection in the Makefile. It selects `start_v2.S`, the PY32 system/SysTick/GPIO/board/BK4819 bus objects, V2 LCD/I²C/keypad/backlight/radio drivers, the V2 linker script, and Cortex-M0+ compiler flags. It excludes the DP32 board/ADC/SPI/system/GPIO drivers and disables optional DP32-only UART/FM/flashlight/timer/overlay features for this first V2 build attempt.
+- The V2 workflow now attempts the full application build after the isolated smoke ELF link, so the remaining unresolved symbols, memory limits, and source assumptions can be addressed from actual build output.
