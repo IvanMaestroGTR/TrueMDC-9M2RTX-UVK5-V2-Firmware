@@ -209,3 +209,10 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - Added a target-specific bit-banged I²C implementation in `driver/i2c.c` using the V2 reference pins SCL PA5 and SDA PA6. SDA direction changes use the V2 GPIO mode API; the V1 DP32 open-drain/input register path remains in its original branch.
 - This I²C bus shares PA5/PA6 with keypad matrix activity in the V2 reference design, so the scanner restores those lines high after scanning. Hardware validation is still needed to verify EEPROM ACK timing and the shared-line behavior on the actual radio.
 - CI now includes a standalone V2 compile step for the I²C driver. This is a source-compile check, not proof of EEPROM read/write operation on hardware.
+
+
+## Application startup sequencing (2026-10-24)
+
+- V2 startup now initializes the PA8 backlight GPIO after the board GPIO layer and initializes the ST7565 display after EEPROM settings have been loaded, before the welcome UI is rendered.
+- V2 startup explicitly avoids calling the DP32 battery ADC routines and avoids the existing low-battery shutdown logic until a PY32 ADC implementation is ready. Battery indication is therefore not functional yet on V2.
+- CI coverage was expanded to compile the shared EEPROM driver against the new V2 I²C transport. The remaining major blockers are V2 ADC/battery sampling, full EEPROM validation on hardware, and radio/display integration testing.
