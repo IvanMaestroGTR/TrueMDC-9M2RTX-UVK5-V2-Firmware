@@ -13,7 +13,7 @@ ENABLE_LTO                    ?= 1
 # ---- STOCK QUANSHENG FERATURES ----
 ENABLE_UART                   ?= 1
 ENABLE_AIRCOPY                ?= 0
-ENABLE_FMRADIO                = 0
+ENABLE_FMRADIO                ?= 0
 ENABLE_NOAA                   ?= 0
 ENABLE_VOICE                  ?= 0
 ENABLE_VOX                    ?= 1
@@ -40,7 +40,7 @@ ENABLE_SQUELCH_MORE_SENSITIVE ?= 1
 ENABLE_FASTER_CHANNEL_SCAN    ?= 1
 ENABLE_RSSI_BAR               ?= 1
 ENABLE_COPY_CHAN_TO_VFO       ?= 1
-ENABLE_SPECTRUM               = 0
+ENABLE_SPECTRUM               ?= 0
 ENABLE_REDUCE_LOW_MID_TX_POWER?= 0
 ENABLE_BYP_RAW_DEMODULATORS   ?= 0
 ENABLE_BLMIN_TMP_OFF          ?= 0
@@ -74,12 +74,10 @@ ifeq ($(TARGET_UVK5_V2),1)
     # Features tied to DP32-only peripherals are disabled for the first V2 port.
     ENABLE_UART := 0
     ENABLE_AIRCOPY := 0
-    ENABLE_FMRADIO := 0
     ENABLE_FLASHLIGHT := 0
     ENABLE_TIMER := 0
     ENABLE_4732 := 0
     ENABLE_DOPPLER := 0
-    ENABLE_SPECTRUM := 0
     ENABLE_OVERLAY := 0
 endif
 #############################################################
@@ -172,6 +170,9 @@ endif
 # Drivers
 ifeq ($(TARGET_UVK5_V2),1)
     OBJS += driver/backlight.o
+    ifeq ($(ENABLE_FMRADIO),1)
+        OBJS += driver/bk1080.o
+    endif
     OBJS += driver/bk4819.o
     ifeq ($(ENABLE_MDC1200),1)
         OBJS += driver/crc.o
