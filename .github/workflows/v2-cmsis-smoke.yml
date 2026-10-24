@@ -143,6 +143,24 @@ jobs:
         run: |
           make build TARGET_UVK5_V2=1 ENABLE_MDC1200=1 ENABLE_MDC1200_EDIT=1 ENABLE_MDC1200_CONTACT=1
 
+      - name: Validate V2 image layout
+        run: |
+          test -s firmware
+          test -s firmware.bin
+          test -s archive/TrueMDC.Gen00.packed.bin
+          python3 - <<'PY'
+          import os
+          import struct
+          path = "firmware.bin"
+          size = os.path.getsize(path)
+          with open(path, "rb") as image:
+              initial_sp, reset_vector = struct.unpack("<II", image.read(8))
+          reset_address = reset_vector & ~1
+          assert size <= 60 * 1024, f"image exceeds 60 KiB application flash: {size}"
+          assert 0x20000000 <= initial_sp <= 0x20002000, f"invalid initial stack pointer: 0x{initial_sp:08x}"
+          assert 0x08001000 <= reset_address < 0x08010000, f"reset handler outside V2 application flash: 0x{reset_vector:08x}"
+          print(f"V2 image: {size} bytes; MSP=0x{initial_sp:08x}; reset=0x{reset_vector:08x}")
+          PY
       - name: Publish V2 build outputs
         uses: actions/upload-artifact@v4
         with:
