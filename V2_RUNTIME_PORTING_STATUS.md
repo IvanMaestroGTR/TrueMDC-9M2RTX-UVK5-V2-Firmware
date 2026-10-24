@@ -180,3 +180,10 @@ a clean tree, inspect the map and image size, and test on a recoverable device.
 - `app/app.c` now reads the PTT state from V2 PA3 through `GPIO_V2_Read(GPIOA)`; V1 retains its original GPIOC PTT input. DP32 GPIO/system headers are excluded from this application translation unit for V2 builds.
 - `driver/system_v2.c` now provides the shared `SYSTEM_DelayMs()` API using the V2 SysTick timer, so shared application startup delays don't require the DP32 system driver.
 - This is application source adaptation, not a claim that the whole app is ready to execute: EEPROM/I2C, ADC/battery readings, display SPI, keyboard matrix, audio/voice, backlight PWM, and the remaining DP32-dependent drivers still need their V2 implementations. The complete application image has not been built or tested on hardware.
+
+
+## V2 keypad/application input port (2026-10-24)
+
+- Ported the shared keypad scanner in `driver/keyboard.c` to the V2 reference matrix: rows PF0/PF1/PA0/PA1; columns PA5/PA6/PA7/PB0. The V2 branch uses `GPIO_V2_Read/Set/Clear`, retains the same key map and debounce sampling, and avoids toggling the V1 I2C bus.
+- Kept the original DP32 keypad implementation intact under the non-V2 branch. The V1 keypad table and GPIO includes are excluded when `TARGET_UVK5_V2` is selected.
+- This advances the application input path, but the V2 GPIO initialization must still be followed by a complete V2 board/peripheral init. LCD/SPI, audio, backlight PWM, ADC/battery, EEPROM/I2C and other device drivers remain pending.
