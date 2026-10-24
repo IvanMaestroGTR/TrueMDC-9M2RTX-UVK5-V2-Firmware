@@ -1,4 +1,14 @@
-# Note: This firmware is currently compatible with v1 hardware only. Support for other hardware versions is planned for the future.
+# TrueMDC UV-K5 Firmware
+
+This repository contains the LOSEHU132E-based TrueMDC firmware and an experimental UV-K5 V2 (PY32F030) hardware port. The V2 port is built against the V2 hardware reference and currently includes the shared MDC1200/FleetSync signalling features, BK1080 FM radio, and spectrum mode.
+
+**V2 status:** GitHub Actions successfully compiles and links the V2 image, including FM and spectrum, and validates the firmware image layout and flash-size limit. Physical-radio validation is still pending, so treat V2 builds as experimental. Do not flash a V1 image to V2 hardware or a V2 image to V1 hardware.
+
+Build the V2 image in Docker with:
+
+```sh
+./compile-with-docker.sh <version>
+```
 
 This firmware is based on the LOSEHU132E firmware (see: https://github.com/losehu/uv-k5-firmware-custom), with several changes made to differentiate it from the original 132E build.
 Please refer to the releases for the changelog.
