@@ -4,6 +4,7 @@
 # 1 = enable
 
 # ---- COMPILER/LINKER OPTIONS ----
+TARGET_UVK5_V2                ?= 0
 ENABLE_CLANG                  ?= 0
 ENABLE_SWD                    ?= 1
 ENABLE_OVERLAY                ?= 0
@@ -68,6 +69,19 @@ ENABLE_4732 =0
 ENABLE_4732SSB =0
 
 ENABLE_DOPPLER               =0
+
+ifeq ($(TARGET_UVK5_V2),1)
+    # Features tied to DP32-only peripherals are disabled for the first V2 port.
+    ENABLE_UART := 0
+    ENABLE_AIRCOPY := 0
+    ENABLE_FMRADIO := 0
+    ENABLE_FLASHLIGHT := 0
+    ENABLE_TIMER := 0
+    ENABLE_4732 := 0
+    ENABLE_DOPPLER := 0
+    ENABLE_SPECTRUM := 0
+    ENABLE_OVERLAY := 0
+endif
 #############################################################
 PACKED_FILE_SUFFIX = 9M2RTX-LOSEHU
 
@@ -87,6 +101,10 @@ endif
 
 
 CFLAGS =
+
+ifeq ($(TARGET_UVK5_V2),1)
+    CFLAGS += -DTARGET_UVK5_V2
+endif
 
 
 ifeq ($(ENABLE_MDC1200),0)
@@ -118,7 +136,16 @@ BSP_HEADERS     := $(patsubst %.def,%.h,$(BSP_HEADERS))
 
 OBJS =
 # Startup files
-OBJS += start.o
+ifeq ($(TARGET_UVK5_V2),1)
+    OBJS += start_v2.o
+    OBJS += driver/system_v2.o
+    OBJS += driver/systick_v2.o
+    OBJS += driver/gpio_v2.o
+    OBJS += driver/board_v2.o
+    OBJS += driver/bk4819_bus_v2.o
+else
+    OBJS += start.o
+endif
 OBJS += init.o
 
 ifeq ($(ENABLE_OVERLAY),1)
@@ -143,37 +170,46 @@ ifeq ($(ENABLE_DOPPLER),1)
     OBJS += app/doppler.o
 endif
 # Drivers
-OBJS += driver/adc.o
-ifeq ($(ENABLE_UART),1)
-	OBJS += driver/aes.o
-endif
-OBJS += driver/backlight.o
-ifeq ($(ENABLE_FMRADIO),1)
-	OBJS += driver/bk1080.o
-endif
-OBJS += driver/bk4819.o
-ifeq ($(filter $(ENABLE_AIRCOPY) $(ENABLE_UART),1),1)
-	OBJS += driver/crc.o
-endif
-OBJS += driver/eeprom.o
-ifeq ($(ENABLE_OVERLAY),1)
-	OBJS += driver/flash.o
-endif
-ifeq ($(ENABLE_4732),1)
+ifeq ($(TARGET_UVK5_V2),1)
+    OBJS += driver/backlight.o
+    OBJS += driver/bk4819.o
+    OBJS += driver/eeprom.o
+    OBJS += driver/i2c.o
+    OBJS += driver/keyboard.o
+    OBJS += driver/st7565.o
+else
+    OBJS += driver/adc.o
+    ifeq ($(ENABLE_UART),1)
+        OBJS += driver/aes.o
+    endif
+    OBJS += driver/backlight.o
+    ifeq ($(ENABLE_FMRADIO),1)
+        OBJS += driver/bk1080.o
+    endif
+    OBJS += driver/bk4819.o
+    ifeq ($(filter $(ENABLE_AIRCOPY) $(ENABLE_UART),1),1)
+        OBJS += driver/crc.o
+    endif
+    OBJS += driver/eeprom.o
+    ifeq ($(ENABLE_OVERLAY),1)
+        OBJS += driver/flash.o
+    endif
+    ifeq ($(ENABLE_4732),1)
         OBJS += app/si.o
         OBJS += driver/si473x.o
         OBJS += helper/rds.o
         OBJS += app/spectrum.o
-endif
-OBJS += driver/gpio.o
-OBJS += driver/i2c.o
-OBJS += driver/keyboard.o
-OBJS += driver/spi.o
-OBJS += driver/st7565.o
-OBJS += driver/system.o
-OBJS += driver/systick.o
-ifeq ($(ENABLE_UART),1)
-	OBJS += driver/uart.o
+    endif
+    OBJS += driver/gpio.o
+    OBJS += driver/i2c.o
+    OBJS += driver/keyboard.o
+    OBJS += driver/spi.o
+    OBJS += driver/st7565.o
+    OBJS += driver/system.o
+    OBJS += driver/systick.o
+    ifeq ($(ENABLE_UART),1)
+        OBJS += driver/uart.o
+    endif
 endif
 
 # Main
@@ -206,7 +242,9 @@ ifeq ($(ENABLE_AM_FIX), 1)
 endif
 OBJS += audio.o
 OBJS += bitmaps.o
+ifeq ($(TARGET_UVK5_V2),0)
 OBJS += board.o
+endif
 OBJS += dcs.o
 OBJS += font.o
 OBJS += frequencies.o
@@ -515,7 +553,11 @@ ifeq ($(ENABLE_FLASHLIGHT),1)
 endif
 
 LDFLAGS =
+ifeq ($(TARGET_UVK5_V2),1)
+LDFLAGS += -z noexecstack -mcpu=cortex-m0plus -nostartfiles -Wl,-T,firmware_v2.ld -Wl,--gc-sections
+else
 LDFLAGS += -z noexecstack -mcpu=cortex-m0 -nostartfiles -Wl,-T,firmware.ld -Wl,--gc-sections
+endif
 
 # Use newlib-nano instead of newlib
 LDFLAGS += --specs=nano.specs
