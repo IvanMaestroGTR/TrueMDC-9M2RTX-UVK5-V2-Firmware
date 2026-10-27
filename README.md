@@ -1,4 +1,4 @@
-# TrueMDC UV-K5 Firmware
+# TrueMDC UV-K5 V2 Firmware
 
 This repository contains the LOSEHU132E-based TrueMDC firmware and an experimental UV-K5 V2 (PY32F030) hardware port. The V2 port is built against the V2 hardware reference and currently includes the shared MDC1200/FleetSync signalling features, BK1080 FM radio, and spectrum mode.
 
