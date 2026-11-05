@@ -121,6 +121,9 @@ void _putchar(__attribute__((unused)) char c) {
 #endif
 
 void Main(void) {
+#ifdef TARGET_UVK5_V2
+    bool v2_adc_ready = false;
+#endif
     //BOOT_Mode_t  BootMode;
 
 #ifndef TARGET_UVK5_V2
@@ -148,7 +151,7 @@ void Main(void) {
 #ifdef TARGET_UVK5_V2
     BOARD_V2_GPIO_Init();
     BACKLIGHT_InitHardware();
-    BOARD_V2_ADC_Init();
+    v2_adc_ready = BOARD_V2_ADC_Init();
 #else
     BOARD_Init();
 #endif
@@ -169,7 +172,9 @@ void Main(void) {
 #ifndef TARGET_UVK5_V2
     BOARD_ADC_GetBatteryInfo(&gBatteryCurrentVoltage, &gBatteryCurrent);
 #else
-    BOARD_V2_ADC_GetBatteryInfo(&gBatteryCurrentVoltage, &gBatteryCurrent);
+    if (v2_adc_ready) {
+        (void)BOARD_V2_ADC_GetBatteryInfo(&gBatteryCurrentVoltage, &gBatteryCurrent);
+    }
 #endif
 
 
@@ -206,10 +211,13 @@ void Main(void) {
     }
     BATTERY_GetReadings(false);
 #else
-    for (uint32_t i = 0; i < ARRAY_SIZE(gBatteryVoltages); i++) {
-        BOARD_V2_ADC_GetBatteryInfo(&gBatteryVoltages[i], &gBatteryCurrent);
+    bool battery_samples_valid = v2_adc_ready;
+    for (uint32_t i = 0; battery_samples_valid && i < ARRAY_SIZE(gBatteryVoltages); i++) {
+        battery_samples_valid = BOARD_V2_ADC_GetBatteryInfo(&gBatteryVoltages[i], &gBatteryCurrent);
     }
-    BATTERY_GetReadings(false);
+    if (battery_samples_valid) {
+        BATTERY_GetReadings(false);
+    }
 #endif
 
 #ifdef ENABLE_AM_FIX

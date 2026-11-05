@@ -6,10 +6,11 @@
 #ifndef TRUEMDC_BOARD_V2_H
 #define TRUEMDC_BOARD_V2_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 void BOARD_V2_GPIO_Init(void);
-void BOARD_V2_ADC_Init(void);
-void BOARD_V2_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent);
+bool BOARD_V2_ADC_Init(void);
+bool BOARD_V2_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent);
 
 #endif

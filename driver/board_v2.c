@@ -1,5 +1,6 @@
 #include "board_v2.h"
 #include "gpio_v2.h"
+#include <stdbool.h>
 
 #define PIN(n) ((uint16_t)(1U << (n)))
 
@@ -41,7 +42,7 @@ void BOARD_V2_GPIO_Init(void)
  */
 #include "../bsp/py32f030/device.h"
 
-void BOARD_V2_ADC_Init(void)
+bool BOARD_V2_ADC_Init(void)
 {
     RCC->APBENR2 |= RCC_APBENR2_ADCEN;
 
@@ -61,8 +62,8 @@ void BOARD_V2_ADC_Init(void)
     }
 
     /* Do not enable the ADC or expose uncalibrated measurements on timeout. */
-    if (timeout == 0U) {
-        return;
+    if ((ADC1->CR & ADC_CR_ADCAL) != 0U) {
+        return false;
     }
 
     ADC1->CR |= ADC_CR_ADEN;
@@ -70,12 +71,13 @@ void BOARD_V2_ADC_Init(void)
     for (volatile uint32_t settle = 20000U; settle != 0U; --settle) {
         __NOP();
     }
+    return true;
 }
 
-static uint16_t BOARD_V2_ADC_ReadChannel(uint32_t channel_mask)
+static bool BOARD_V2_ADC_ReadChannel(uint32_t channel_mask, uint16_t *pValue)
 {
-    if ((ADC1->CR & ADC_CR_ADEN) == 0U) {
-        return 0U;
+    if (pValue == 0 || (ADC1->CR & ADC_CR_ADEN) == 0U) {
+        return false;
     }
 
     /* Clear stale conversion flags and select exactly one input channel. */
@@ -92,20 +94,26 @@ static uint16_t BOARD_V2_ADC_ReadChannel(uint32_t channel_mask)
     }
 
     if ((ADC1->ISR & ADC_ISR_EOC) == 0U) {
-        return 0U;
+        return false;
     }
 
-    const uint16_t value = (uint16_t)(ADC1->DR & 0x0FFFU);
+    *pValue = (uint16_t)(ADC1->DR & 0x0FFFU);
     ADC1->ISR = ADC_ISR_EOC;
-    return value;
+    return true;
 }
 
-void BOARD_V2_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent)
+bool BOARD_V2_ADC_GetBatteryInfo(uint16_t *pVoltage, uint16_t *pCurrent)
 {
-    if (pVoltage != 0) {
-        *pVoltage = BOARD_V2_ADC_ReadChannel(ADC_CHSELR_CHSEL4);
+    uint16_t voltage;
+    uint16_t current;
+    if (pVoltage == 0 || pCurrent == 0) {
+        return false;
     }
-    if (pCurrent != 0) {
-        *pCurrent = BOARD_V2_ADC_ReadChannel(ADC_CHSELR_CHSEL9);
+    if (!BOARD_V2_ADC_ReadChannel(ADC_CHSELR_CHSEL4, &voltage) ||
+        !BOARD_V2_ADC_ReadChannel(ADC_CHSELR_CHSEL9, &current)) {
+        return false;
     }
+    *pVoltage = voltage;
+    *pCurrent = current;
+    return true;
 }
