@@ -42,12 +42,26 @@ static void SYSTICK_WaitTicks(uint32_t ticks)
     }
 }
 
+static void SYSTICK_WaitTicks64(uint64_t ticks)
+{
+    /* Keep each wait below the 32-bit elapsed-counter limit. */
+    while (ticks != 0ULL) {
+        const uint32_t chunk = ticks > 1000000ULL
+            ? 1000000U
+            : (uint32_t)ticks;
+        SYSTICK_WaitTicks(chunk);
+        ticks -= chunk;
+    }
+}
+
 void SYSTICK_DelayUs(uint32_t delay)
 {
-    SYSTICK_WaitTicks(delay * gTickMultiplier);
+    const uint64_t ticks = (uint64_t)delay * (uint64_t)gTickMultiplier;
+    SYSTICK_WaitTicks64(ticks);
 }
 
 void SYSTICK_Delay250ns(const uint32_t delay)
 {
-    SYSTICK_WaitTicks((delay * gTickMultiplier) / 4U);
+    const uint64_t ticks = ((uint64_t)delay * (uint64_t)gTickMultiplier) / 4ULL;
+    SYSTICK_WaitTicks64(ticks);
 }

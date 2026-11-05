@@ -16,7 +16,16 @@
 
 void SYSTEM_DelayMs(uint32_t Delay)
 {
-    SYSTICK_DelayUs(Delay * 1000U);
+    /* Use a 64-bit millisecond-to-microsecond conversion to avoid wraparound. */
+    uint64_t remaining_us = (uint64_t)Delay * 1000ULL;
+
+    while (remaining_us != 0ULL) {
+        const uint32_t chunk = remaining_us > 0xFFFFFFFFULL
+            ? 0xFFFFFFFFU
+            : (uint32_t)remaining_us;
+        SYSTICK_DelayUs(chunk);
+        remaining_us -= chunk;
+    }
 }
 
 

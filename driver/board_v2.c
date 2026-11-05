@@ -55,8 +55,14 @@ void BOARD_V2_ADC_Init(void)
     ADC1->ISR = ADC_ISR_EOC | ADC_ISR_EOSEQ | ADC_ISR_EOSMP;
 
     ADC1->CR |= ADC_CR_ADCAL;
-    for (volatile uint32_t timeout = 1000000U;
-         (ADC1->CR & ADC_CR_ADCAL) != 0U && timeout != 0U; --timeout) {
+    uint32_t timeout = 1000000U;
+    while ((ADC1->CR & ADC_CR_ADCAL) != 0U && timeout != 0U) {
+        --timeout;
+    }
+
+    /* Do not enable the ADC or expose uncalibrated measurements on timeout. */
+    if (timeout == 0U) {
+        return;
     }
 
     ADC1->CR |= ADC_CR_ADEN;
